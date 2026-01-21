@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificates | Virja Industries{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 py-12" x-data="{ lightboxOpen: false, activeImage: '' }">
+    <div class="container mx-auto px-4">
+        <h1
+            class="text-3xl font-bold text-gray-800 mb-8 text-center uppercase border-b-4 border-secondary inline-block pb-2">
+            Our Certificates</h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {% for cert in certificates %}
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer"
+                @click="activeImage = '{{ cert.image_or_pdf.url }}'; lightboxOpen = true">
+                <div
+                    class="h-64 bg-gray-100 flex items-center justify-center mb-4 overflow-hidden rounded border border-gray-100">
+                    <img src="{{ cert.image_or_pdf.url }}" alt="{{ cert.title }}" class="w-full h-full object-contain">
+                </div>
+                <h3 class="font-bold text-gray-800 text-center">{{ cert.title }}</h3>
+            </div>
+            {% empty %}
+            <p class="col-span-4 text-center text-gray-500">No certificates available.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div x-show="lightboxOpen" style="display: none;"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+        @click.self="lightboxOpen = false" x-transition.opacity>
+        <div class="relative max-w-4xl w-full max-h-screen">
+            <button @click="lightboxOpen = false"
+                class="absolute -top-10 right-0 text-white text-3xl hover:text-gray-300">&times;</button>
+            <img :src="activeImage" class="max-w-full max-h-[90vh] mx-auto rounded shadow-2xl">
+        </div>
+    </div>
+</div>
+{% endblock %}
