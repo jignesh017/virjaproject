@@ -32,10 +32,12 @@
                     </div>
                 </div>
                 <div class="flex space-x-2 overflow-x-auto pb-2">
+                    {% if product.main_image %}
                     <button @click="activeImage = '{{ product.main_image.url }}'"
                         class="border border-gray-200 rounded p-1 w-20 h-20 flex-shrink-0 hover:border-secondary focus:border-secondary bg-white">
                         <img src="{{ product.main_image.url }}" class="w-full h-full object-contain">
                     </button>
+                    {% endif %}
                     {% for img in product.images.all %}
                     <button @click="activeImage = '{{ img.image.url }}'"
                         class="border border-gray-200 rounded p-1 w-20 h-20 flex-shrink-0 hover:border-secondary focus:border-secondary bg-white">
@@ -92,7 +94,14 @@
                         <div class="grid grid-cols-2 gap-4">
                             {% for rel in related_products %}
                             <div class="bg-white p-4 border border-gray-200 rounded hover:shadow-md transition">
+                                {% if rel.main_image %}
                                 <img src="{{ rel.main_image.url }}" class="h-24 w-full object-contain mb-2">
+                                {% else %}
+                                <div
+                                    class="h-24 w-full bg-gray-100 flex items-center justify-center mb-2 text-gray-400">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                                {% endif %}
                                 <h4 class="font-bold text-xs"><a href="{% url 'product_detail' rel.slug %}"
                                         class="hover:text-primary">{{ rel.name }}</a></h4>
                             </div>

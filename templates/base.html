@@ -18,6 +18,15 @@
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        }
+                    },
+                    animation: {
+                        marquee: 'marquee 30s linear infinite',
                     }
                 }
             }
@@ -177,8 +186,6 @@
                                     <div class="col-span-9 grid grid-cols-4 gap-x-6 gap-y-8">
                                         {% for category in mega_menu_categories|slice:":8" %}
                                         <div class="break-inside-avoid">
-                                            <div style="background:red; color:white; font-size:10px;">PROBE: {{ 1|add:1
-                                                }} CAT: {{ category }}</div>
                                             <a href="/products/?category={{ category.slug }}"
                                                 class="group/cat block mb-2">
                                                 <div class="flex items-center gap-3">
@@ -192,8 +199,9 @@
                                                         {% endif %}
                                                     </div>
                                                     <span
-                                                        class="font-black text-primary group-hover/cat:text-secondary text-sm uppercase tracking-wide leading-tight">{{
-                                                        category.name }}</span>
+                                                        class="font-black text-primary group-hover/cat:text-secondary text-sm uppercase tracking-wide leading-tight">
+                                                        {{ category.name }}
+                                                    </span>
                                                 </div>
                                             </a>
                                             {% if category.children.exists %}
@@ -202,8 +210,9 @@
                                                 {% for child in category.children.all|slice:":4" %}
                                                 <li>
                                                     <a href="/products/?category={{ child.slug }}"
-                                                        class="hover:text-secondary transition-colors block py-0.5 hover:translate-x-1 transform duration-150 font-medium">{{
-                                                        child.name }}</a>
+                                                        class="hover:text-secondary transition-colors block py-0.5 hover:translate-x-1 transform duration-150 font-medium">
+                                                        {{ child.name }}
+                                                    </a>
                                                 </li>
                                                 {% endfor %}
                                             </ul>

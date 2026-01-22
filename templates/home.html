@@ -198,8 +198,9 @@
                 <!-- Badges -->
                 <div class="absolute top-3 left-3 z-10 flex flex-col gap-2">
                     {% if product.brand %}
-                    <span class="bg-gray-900 text-white text-[10px] uppercase font-bold px-2 py-1 rounded">{{
-                        product.brand.name }}</span>
+                    <span class="bg-gray-900 text-white text-[10px] uppercase font-bold px-2 py-1 rounded">
+                        {{ product.brand.name }}
+                    </span>
                     {% endif %}
                 </div>
 
@@ -255,8 +256,23 @@
 <section class="py-16 bg-gray-50 border-t border-gray-200 overflow-hidden">
     <div class="container mx-auto px-4 text-center">
         <h2 class="text-lg font-bold text-gray-400 uppercase tracking-[0.3em] mb-10">Trusted By Industry Leaders</h2>
-        <div class="relative overflow-hidden group">
-            <div class="flex space-x-12 animate-marquee items-center justify-center flex-wrap">
+        <!-- Marquee Container -->
+        <div class="flex overflow-hidden relative">
+            <!-- Single wrapper for all items (original + duplicate) to ensure connected flow -->
+            <div class="flex gap-12 animate-marquee whitespace-nowrap px-6">
+                <!-- Original -->
+                {% for brand in brands %}
+                <div
+                    class="w-32 h-20 flex-shrink-0 flex items-center justify-center opacity-60 hover:opacity-100 transition grayscale hover:grayscale-0 duration-300">
+                    {% if brand.logo %}
+                    <img src="{{ brand.logo.url }}" alt="{{ brand.name }}" class="max-w-full max-h-full object-contain">
+                    {% else %}
+                    <span class="font-black text-xl text-gray-300 uppercase">{{ brand.name }}</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <!-- Duplicate -->
                 {% for brand in brands %}
                 <div
                     class="w-32 h-20 flex-shrink-0 flex items-center justify-center opacity-60 hover:opacity-100 transition grayscale hover:grayscale-0 duration-300">
