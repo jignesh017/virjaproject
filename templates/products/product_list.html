@@ -45,15 +45,17 @@ Products | Virja Industries
                         {% for cat in categories %}
                         <li>
                             <a href="?category={{ cat.slug }}"
-                                class="{% if selected_category == cat %}text-secondary font-bold{% elif selected_category.parent == cat %}text-primary font-semibold{% else %}text-gray-600 hover:text-primary{% endif %}">{{
-                                cat.name }}</a>
+                                class="{% if selected_category == cat %}text-secondary font-bold{% elif selected_category.parent == cat %}text-primary font-semibold{% else %}text-gray-600 hover:text-primary{% endif %}">
+                                {{ cat.name }}
+                            </a>
                             {% if cat.children.exists %}
                             <ul class="ml-4 mt-1 space-y-1 border-l border-gray-200 pl-2">
                                 {% for child in cat.children.all %}
                                 <li>
                                     <a href="?category={{ child.slug }}"
-                                        class="{% if selected_category == child %}text-secondary font-bold{% else %}text-gray-500 hover:text-primary{% endif %}">{{
-                                        child.name }}</a>
+                                        class="{% if selected_category == child %}text-secondary font-bold{% else %}text-gray-500 hover:text-primary{% endif %}">
+                                        {{ child.name }}
+                                    </a>
                                 </li>
                                 {% endfor %}
                             </ul>
@@ -119,8 +121,9 @@ Products | Virja Industries
                         </div>
                     </div>
                     <div class="p-4 flex flex-col flex-grow">
-                        <div class="text-xs text-gray-500 mb-1 uppercase font-semibold tracking-wide">{{
-                            product.brand.name }}</div>
+                        <div class="text-xs text-gray-500 mb-1 uppercase font-semibold tracking-wide">
+                            {{ product.brand.name }}
+                        </div>
                         <h2 class="text-lg font-bold text-gray-800 mb-2 leading-tight hover:text-primary transition">
                             <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
                         </h2>

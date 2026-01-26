@@ -29,4 +29,8 @@ urlpatterns = [
     path('certificates/', include('certificates.urls')),
     path('contact/', include('enquiries.urls')),
     path('about/', core_views.about, name='about'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
