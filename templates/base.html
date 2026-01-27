@@ -61,47 +61,20 @@
 
 <body class="flex flex-col min-h-screen bg-gray-50 text-gray-800">
 
-    <!-- Top Bar -->
-    <div class="bg-gray-900 text-white text-xs py-1.5 border-b border-gray-800">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center space-x-6">
-                <span class="opacity-80"><i class="fas fa-map-marker-alt text-secondary mr-1"></i> Pune, India</span>
-                <a href="mailto:info@virjaproject.com"
-                    class="hover:text-secondary transition opacity-80 hover:opacity-100"><i
-                        class="fas fa-envelope mr-1"></i> info@virjaproject.com</a>
-            </div>
-            <div class="flex items-center space-x-4">
-                <a href="#" class="opacity-60 hover:opacity-100 hover:text-white transition"><i
-                        class="fab fa-linkedin"></i></a>
-                <a href="#" class="opacity-60 hover:opacity-100 hover:text-white transition"><i
-                        class="fab fa-facebook"></i></a>
-                <a href="#" class="opacity-60 hover:opacity-100 hover:text-white transition"><i
-                        class="fab fa-twitter"></i></a>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Header & Navigation -->
     <header class="bg-white shadow-md relative z-50 sticky top-0" x-data="{ mobileMenuOpen: false }">
         <!-- Main Header Row -->
         <div class="container mx-auto px-4 py-3 flex justify-between items-center bg-white relative z-20">
             <!-- Logo -->
-            <a href="{% url 'home' %}" class="flex items-center gap-2 group">
-                <div
-                    class="bg-primary text-white w-10 h-10 flex items-center justify-center rounded shadow-sm group-hover:bg-secondary transition-colors">
-                    <i class="fas fa-industry fa-lg"></i>
-                </div>
-                <div class="flex flex-col">
-                    <h1
-                        class="text-2xl font-black text-gray-800 tracking-tighter uppercase leading-none group-hover:text-primary transition-colors">
-                        VIRJA<span class="text-secondary">.</span></h1>
-                    <span
-                        class="text-[0.6rem] font-bold text-gray-500 tracking-[0.2em] uppercase -mt-0.5">Industrial</span>
-                </div>
+            <a href="{% url 'home' %}" class="flex items-center gap-2 group ml-12">
+                <img src="{% static 'img/virja_logo.png' %}" alt="Virja Automation Pvt. Ltd."
+                    class="h-16 w-auto object-contain">
             </a>
 
             <!-- Search Bar (Desktop) -->
-            <div class="hidden md:block flex-1 max-w-2xl mx-8 lg:mx-16">
+            <div class="hidden md:block flex-1 max-w-2xl mx-4 lg:mx-8">
                 <form action="{% url 'product_list' %}" method="GET" class="flex w-full relative group">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fas fa-search text-gray-400 group-focus-within:text-primary transition-colors"></i>
@@ -321,7 +294,7 @@
                     </li>
                     <li class="flex items-center">
                         <i class="fas fa-envelope mr-3 text-secondary"></i>
-                        <span>info@virjaproject.com</span>
+                        <span>info@virjaautomation.com</span>
                     </li>
                 </ul>
             </div>
@@ -338,7 +311,7 @@
         </div>
         <div
             class="border-t border-gray-800 mt-10 pt-6 text-center text-xs text-gray-500 flex justify-between container mx-auto px-4">
-            <span>&copy; 2026 Virja Industries. All rights reserved.</span>
+            <span>&copy; 2026 Virja Automation Pvt. Ltd. All rights reserved.</span>
             <div class="space-x-4">
                 <a href="#" class="hover:text-white">Privacy Policy</a>
                 <a href="#" class="hover:text-white">Terms of Service</a>
