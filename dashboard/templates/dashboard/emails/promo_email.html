@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ subject }}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .wrapper {
+            width: 100%;
+            background-color: #f1f5f9;
+            padding: 40px 0;
+        }
+
+        .main-table {
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+            background-color: #ffffff;
+        }
+
+        .header {
+            background-color: #0f172a;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .content {
+            padding: 40px;
+            color: #334155;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            background-color: #f8fafc;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <table class="main-table">
+            <tr>
+                <td class="header">
+                    <h1>Virja Automation</h1>
+                </td>
+            </tr>
+            <tr>
+                <td class="content">
+                    {{ message|safe }}
+                </td>
+            </tr>
+            <tr>
+                <td class="footer">
+                    &copy; {% now "Y" %} Virja Industries. All rights reserved.<br>
+                    You are receiving this email because you subscribed to our newsletter.<br>
+                    <a href="#">Unsubscribe</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

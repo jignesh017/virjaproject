@@ -1,0 +1,87 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}Overview | Virja Admin{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Stat Card 1 -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
+        <div class="p-3 rounded-full bg-blue-100 text-blue-600 mr-4">
+            <i class="fas fa-box fa-lg"></i>
+        </div>
+        <div>
+            <p class="text-gray-500 text-sm font-medium">Total Products</p>
+            <p class="text-2xl font-bold text-gray-800">{{ stats.total_products }}</p>
+        </div>
+    </div>
+
+    <!-- Stat Card 2 -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
+        <div class="p-3 rounded-full bg-green-100 text-green-600 mr-4">
+            <i class="fas fa-folder fa-lg"></i>
+        </div>
+        <div>
+            <p class="text-gray-500 text-sm font-medium">Categories</p>
+            <p class="text-2xl font-bold text-gray-800">{{ stats.total_categories }}</p>
+        </div>
+    </div>
+
+    <!-- Stat Card 3 -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
+        <div class="p-3 rounded-full bg-purple-100 text-purple-600 mr-4">
+            <i class="fas fa-tags fa-lg"></i>
+        </div>
+        <div class="cursor-pointer" onclick="window.location.href='{% url 'dashboard:brand_list' %}'">
+            <p class="text-gray-500 text-sm font-medium">Brands</p>
+            <p class="text-2xl font-bold text-gray-800">{{ stats.total_brands }}</p>
+        </div>
+    </div>
+
+    <!-- Stat Card 4 -->
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
+        <div class="p-3 rounded-full bg-yellow-100 text-yellow-600 mr-4">
+            <i class="fas fa-envelope fa-lg"></i>
+        </div>
+        <div class="cursor-pointer" onclick="window.location.href='{% url 'dashboard:enquiry_list' %}'">
+            <p class="text-gray-500 text-sm font-medium">New Enquiries</p>
+            <p class="text-2xl font-bold text-gray-800">{{ stats.new_enquiries }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+    <h2 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <a href="{% url 'dashboard:product_create' %}"
+            class="block p-4 border border-dashed border-gray-300 rounded hover:border-blue-500 hover:bg-blue-50 transition text-center group">
+            <i class="fas fa-plus-circle text-gray-400 group-hover:text-blue-500 text-2xl mb-2"></i>
+            <h3 class="font-medium text-gray-700 group-hover:text-blue-600">Add New Product</h3>
+        </a>
+        <a href="{% url 'dashboard:category_create' %}"
+            class="block p-4 border border-dashed border-gray-300 rounded hover:border-green-500 hover:bg-green-50 transition text-center group">
+            <i class="fas fa-folder-plus text-gray-400 group-hover:text-green-500 text-2xl mb-2"></i>
+            <h3 class="font-medium text-gray-700 group-hover:text-green-600">Add New Category</h3>
+        </a>
+        <a href="{% url 'dashboard:brand_create' %}"
+            class="block p-4 border border-dashed border-gray-300 rounded hover:border-purple-500 hover:bg-purple-50 transition text-center group">
+            <i class="fas fa-tag text-gray-400 group-hover:text-purple-500 text-2xl mb-2"></i>
+            <h3 class="font-medium text-gray-700 group-hover:text-purple-600">Add New Brand</h3>
+        </a>
+        <a href="{% url 'dashboard:catalog_add' %}"
+            class="block p-4 border border-dashed border-gray-300 rounded hover:border-red-500 hover:bg-red-50 transition text-center group">
+            <i class="fas fa-file-pdf text-gray-400 group-hover:text-red-500 text-2xl mb-2"></i>
+            <h3 class="font-medium text-gray-700 group-hover:text-red-600">Add New Catalog</h3>
+        </a>
+        <a href="{% url 'dashboard:site_settings' %}"
+            class="block p-4 border border-dashed border-gray-300 rounded hover:border-indigo-500 hover:bg-indigo-50 transition text-center group">
+            <i class="fas fa-cogs text-gray-400 group-hover:text-indigo-500 text-2xl mb-2"></i>
+            <h3 class="font-medium text-gray-700 group-hover:text-indigo-600">Site Settings</h3>
+        </a>
+        <a href="{% url 'dashboard:home_content' %}"
+            class="block p-4 border border-dashed border-gray-300 rounded hover:border-orange-500 hover:bg-orange-50 transition text-center group">
+            <i class="fas fa-home text-gray-400 group-hover:text-orange-500 text-2xl mb-2"></i>
+            <h3 class="font-medium text-gray-700 group-hover:text-orange-600">Home Page Setting</h3>
+        </a>
+    </div>
+</div>
+{% endblock %}

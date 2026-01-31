@@ -41,12 +41,8 @@ def product_list(request):
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
-    related_products = product.related_products.all()[:4]
+    related_products = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id)[:4]
     
-    # If no manual related, fallback to same category
-    if not related_products.exists():
-        related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
-
     context = {
         'product': product,
         'related_products': related_products,

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'dashboard',
     'core',
     'products',
     'categories',
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
     'catalogs',
     'certificates',
     'enquiries',
+    'django_summernote',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.global_categories',
+                'core.context_processors.site_settings',
             ],
         },
     },
@@ -136,3 +139,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Forced Reload
+
+# Email Configuration
+EMAIL_BACKEND = 'core.backends.DatabaseEmailBackend'
+

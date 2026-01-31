@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django_summernote.admin import SummernoteModelAdmin
 from .models import Product, ProductImage
 
 class ProductImageInline(admin.TabularInline):
@@ -6,7 +7,8 @@ class ProductImageInline(admin.TabularInline):
     extra = 1
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(SummernoteModelAdmin):
+    summernote_fields = ('description', 'specification')
     list_display = ('name', 'category', 'brand', 'price_display', 'is_active', 'is_featured')
     list_filter = ('category', 'brand', 'is_active', 'is_featured')
     search_fields = ('name', 'description')

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Virja Industries{% endblock %}</title>
+    <title>{% block title %}{{ company_info.name|default:"Virja Industries" }}{% endblock %}</title>
     <!-- Tailwind CSS (CDN for development, replace with local build in production) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -61,16 +61,18 @@
 
 <body class="flex flex-col min-h-screen bg-gray-50 text-gray-800">
 
-
-
     <!-- Header & Navigation -->
     <header class="bg-white shadow-md relative z-50 sticky top-0" x-data="{ mobileMenuOpen: false }">
         <!-- Main Header Row -->
         <div class="container mx-auto px-4 py-3 flex justify-between items-center bg-white relative z-20">
             <!-- Logo -->
             <a href="{% url 'home' %}" class="flex items-center gap-2 group ml-12">
+                {% if company_info.logo %}
+                <img src="{{ company_info.logo.url }}" alt="{{ company_info.name }}" class="h-16 w-auto object-contain">
+                {% else %}
                 <img src="{% static 'img/virja_logo.png' %}" alt="Virja Automation Pvt. Ltd."
                     class="h-16 w-auto object-contain">
+                {% endif %}
             </a>
 
             <!-- Search Bar (Desktop) -->
@@ -92,8 +94,15 @@
             <div class="hidden md:flex items-center gap-6">
                 <div class="text-right hidden xl:block">
                     <div class="text-[0.6rem] text-gray-400 font-bold uppercase tracking-wider">Sales Support</div>
-                    <div class="text-sm font-black text-gray-800 hover:text-secondary transition cursor-pointer">+91 123
-                        456 7890</div>
+                    <div class="text-sm font-black text-gray-800 hover:text-secondary transition cursor-pointer">
+                        {% if company_info.header_phone %}
+                        {{ company_info.header_phone }}
+                        {% elif company_info.phone %}
+                        {{ company_info.phone }}
+                        {% else %}
+                        +91 123 456 7890
+                        {% endif %}
+                    </div>
                 </div>
                 <a href="/contact/"
                     class="bg-secondary text-white px-6 py-2.5 rounded shadow-lg shadow-red-100 hover:shadow-red-200 font-bold text-sm hover:bg-red-700 transition flex items-center gap-2 transform hover:-translate-y-0.5">
@@ -201,7 +210,7 @@
                     <li><a href="/brands/"
                             class="block py-3 px-6 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-primary transition duration-200 border-r border-gray-700 border-opacity-30">Brands</a>
                     </li>
-                    <li><a href="/catalogs/"
+                    <li><a href="{% url 'catalog_list' %}"
                             class="block py-3 px-6 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-primary transition duration-200 border-r border-gray-700 border-opacity-30">Catalogs</a>
                     </li>
                     <li><a href="/about/"
@@ -244,6 +253,19 @@
     <!-- Main Content -->
     <!-- Main Content -->
     <main class="flex-grow bg-white">
+        {% if messages %}
+        <div class="container mx-auto px-4 mt-4">
+            {% for message in messages %}
+            <div class="p-4 rounded shadow-md mb-4 {% if message.tags == 'error' %}bg-red-100 text-red-700 border-l-4 border-red-500{% elif message.tags == 'success' %}bg-green-100 text-green-700 border-l-4 border-green-500{% else %}bg-blue-100 text-blue-700 border-l-4 border-blue-500{% endif %} flex justify-between items-center"
+                x-data="{ show: true }" x-show="show">
+                <span>{{ message }}</span>
+                <button @click="show = false" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
 
@@ -252,20 +274,41 @@
         <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
                 <h3 class="text-white text-lg font-bold mb-4 uppercase flex items-center gap-2">
-                    <div class="w-1 h-6 bg-secondary"></div> Virja Industries
+                    <div class="w-1 h-6 bg-secondary"></div> {{ company_info.name|default:"Virja Industries" }}
                 </h3>
-                <p class="text-sm text-gray-400 mb-4 leading-relaxed">Leading supplier of industrial safety gear, tools,
-                    and machinery. Quality you can trust.</p>
+                <p class="text-sm text-gray-400 mb-4 leading-relaxed">
+                    {% if company_info.footer_description %}
+                    {{ company_info.footer_description|safe }}
+                    {% else %}
+                    Leading supplier of industrial safety gear, tools, and machinery. Quality you can trust.
+                    {% endif %}
+                </p>
                 <div class="flex space-x-3">
-                    <a href="#"
+                    {% if company_info.facebook %}
+                    <a href="{{ company_info.facebook }}" target="_blank"
                         class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-secondary transition text-white"><i
                             class="fab fa-facebook-f"></i></a>
-                    <a href="#"
+                    {% endif %}
+                    {% if company_info.linkedin %}
+                    <a href="{{ company_info.linkedin }}" target="_blank"
                         class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-secondary transition text-white"><i
                             class="fab fa-linkedin-in"></i></a>
-                    <a href="#"
+                    {% endif %}
+                    {% if company_info.instagram %}
+                    <a href="{{ company_info.instagram }}" target="_blank"
                         class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-secondary transition text-white"><i
                             class="fab fa-instagram"></i></a>
+                    {% endif %}
+                    {% if company_info.twitter %}
+                    <a href="{{ company_info.twitter }}" target="_blank"
+                        class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-secondary transition text-white"><i
+                            class="fab fa-twitter"></i></a>
+                    {% endif %}
+                    {% if company_info.youtube %}
+                    <a href="{{ company_info.youtube }}" target="_blank"
+                        class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center hover:bg-secondary transition text-white"><i
+                            class="fab fa-youtube"></i></a>
+                    {% endif %}
                 </div>
             </div>
             <div>
@@ -273,7 +316,8 @@
                 <ul class="space-y-2 text-sm">
                     <li><a href="/products/" class="hover:text-secondary transition flex items-center gap-2"><i
                                 class="fas fa-chevron-right text-[10px]"></i> Products</a></li>
-                    <li><a href="/catalogs/" class="hover:text-secondary transition flex items-center gap-2"><i
+                    <li><a href="{% url 'catalog_list' %}"
+                            class="hover:text-secondary transition flex items-center gap-2"><i
                                 class="fas fa-chevron-right text-[10px]"></i> Catalogs</a></li>
                     <li><a href="/contact/" class="hover:text-secondary transition flex items-center gap-2"><i
                                 class="fas fa-chevron-right text-[10px]"></i> Contact Us</a></li>
@@ -286,24 +330,37 @@
                 <ul class="space-y-4 text-sm">
                     <li class="flex items-start">
                         <i class="fas fa-map-marker-alt mt-1 mr-3 text-secondary"></i>
-                        <span>Plot 123, Industrial Area,<br>MIDC Bhosari, Pune - 411026</span>
+                        <span>
+                            {% if company_info.address %}
+                            {{ company_info.address|safe }}
+                            {% else %}
+                            Plot 123, Industrial Area,<br>MIDC Bhosari, Pune - 411026
+                            {% endif %}
+                        </span>
                     </li>
                     <li class="flex items-center">
                         <i class="fas fa-phone mr-3 text-secondary"></i>
-                        <span>+91 123 456 7890</span>
+                        <span>
+                            {% if company_info.phone %}
+                            {{ company_info.phone }}
+                            {% else %}
+                            +91 123 456 7890
+                            {% endif %}
+                        </span>
                     </li>
                     <li class="flex items-center">
                         <i class="fas fa-envelope mr-3 text-secondary"></i>
-                        <span>info@virjaautomation.com</span>
+                        <span>{{ company_info.email|default:"info@virjaautomation.com" }}</span>
                     </li>
                 </ul>
             </div>
             <div>
                 <h3 class="text-white text-lg font-bold mb-4 uppercase">Newsletter</h3>
-                <form class="flex flex-col space-y-2">
-                    <input type="email" placeholder="Your email address"
+                <form action="{% url 'subscribe_newsletter' %}" method="POST" class="flex flex-col space-y-2">
+                    {% csrf_token %}
+                    <input type="email" name="email" placeholder="Your email address" required
                         class="px-4 py-2.5 rounded bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-secondary transition placeholder-gray-500">
-                    <button
+                    <button type="submit"
                         class="bg-secondary text-white py-2.5 rounded font-bold hover:bg-red-700 transition shadow-lg">Subscribe</button>
                     <p class="text-[10px] text-gray-500 mt-2">No spam, unsubscribe anytime.</p>
                 </form>
@@ -311,7 +368,8 @@
         </div>
         <div
             class="border-t border-gray-800 mt-10 pt-6 text-center text-xs text-gray-500 flex justify-between container mx-auto px-4">
-            <span>&copy; 2026 Virja Automation Pvt. Ltd. All rights reserved.</span>
+            <span>&copy; {% now "Y" %} {{ company_info.name|default:"Virja Automation Pvt. Ltd." }}. All rights
+                reserved.</span>
             <div class="space-x-4">
                 <a href="#" class="hover:text-white">Privacy Policy</a>
                 <a href="#" class="hover:text-white">Terms of Service</a>

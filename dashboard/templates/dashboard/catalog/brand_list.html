@@ -1,0 +1,62 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}Brands | Virja Admin{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Brands</h2>
+    <a href="{% url 'dashboard:brand_create' %}"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition flex items-center gap-2">
+        <i class="fas fa-plus"></i> Add Brand
+    </a>
+</div>
+
+<div class="bg-white rounded-lg shadow overflow-x-auto border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Featured</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for brand in brands %}
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    {% if brand.logo %}
+                    <img class="h-10 w-10 rounded object-cover" src="{{ brand.logo.url }}" alt="">
+                    {% else %}
+                    <div class="h-10 w-10 rounded bg-gray-100 flex items-center justify-center text-gray-400"><i
+                            class="fas fa-image"></i></div>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">{{ brand.name }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    {% if brand.is_featured %}
+                    <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Yes</span>
+                    {% else %}
+                    <span
+                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">No</span>
+                    {% endif %}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="{% url 'dashboard:brand_edit' brand.pk %}"
+                        class="text-indigo-600 hover:text-indigo-900 mr-3"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="{% url 'dashboard:brand_delete' brand.pk %}" class="text-red-600 hover:text-red-900"><i
+                            class="fas fa-trash"></i> Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="px-6 py-4 text-center text-gray-500">No brands found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

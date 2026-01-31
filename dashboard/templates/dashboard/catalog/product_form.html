@@ -1,0 +1,129 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}{{ title }} | Virja Admin{% endblock %}
+
+{% block extra_head %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+    <div class="flex justify-between items-center mb-6 border-b pb-2">
+        <h2 class="text-xl font-bold text-gray-800">{{ title }}</h2>
+        <a href="{% url 'dashboard:product_list' %}" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+
+        <!-- Basic Information -->
+        <div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b">Basic Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                        for="{{ form.name.id_for_label }}">Name</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.name.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                        for="{{ form.slug.id_for_label }}">Slug</label>
+                    {{ form.slug }}
+                    {% if form.slug.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.slug.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                        for="{{ form.category.id_for_label }}">Category</label>
+                    {{ form.category }}
+                    {% if form.category.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.category.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                        for="{{ form.brand.id_for_label }}">Brand</label>
+                    {{ form.brand }}
+                    {% if form.brand.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.brand.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Description -->
+        <div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b">Product Description</h3>
+            <div class="w-full">
+                {{ form.description }}
+                {% if form.description.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.description.errors|striptags }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Specification -->
+        <div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b">Technical Specifications</h3>
+            <div class="w-full">
+                {{ form.specification }}
+                {% if form.specification.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.specification.errors|striptags }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Media and Settings -->
+        <div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b">Media & Settings</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                        for="{{ form.main_image.id_for_label }}">Main Image</label>
+                    {{ form.main_image }}
+                    {% if form.main_image.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.main_image.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2"
+                        for="{{ form.pdf_brochure.id_for_label }}">PDF Brochure</label>
+                    {{ form.pdf_brochure }}
+                    {% if form.pdf_brochure.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.pdf_brochure.errors|striptags }}</p>
+                    {% endif %}
+                </div>
+                <div class="flex items-center gap-8 mt-2 md:col-span-2">
+                    <div class="flex items-center">
+                        <div class="mr-2">{{ form.is_featured }}</div>
+                        <label class="block text-sm text-gray-900 font-medium"
+                            for="{{ form.is_featured.id_for_label }}">Is Featured</label>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="mr-2">{{ form.is_active }}</div>
+                        <label class="block text-sm text-gray-900 font-medium"
+                            for="{{ form.is_active.id_for_label }}">Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 pt-6 border-t flex justify-end gap-4">
+            <a href="{% url 'dashboard:product_list' %}"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded transition">
+                Cancel
+            </a>
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">
+                Save Product
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

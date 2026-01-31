@@ -76,10 +76,9 @@
 <section class="bg-gray-900 py-32 text-center text-white relative overflow-hidden">
     <div class="absolute inset-0 bg-pattern opacity-10"></div>
     <div class="container mx-auto px-4 relative z-10">
-        <h1 class="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tight">Industrial <span
-                class="text-secondary">Excellence</span></h1>
-        <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto font-light">Premium tools, machinery, and safety
-            equipment for professional applications.</p>
+        <h1 class="text-5xl md:text-7xl font-black mb-6 uppercase tracking-tight">{{ home_content.hero_fallback_title|default:'Industrial <span class="text-secondary">Excellence</span>'|safe }}
+        </h1>
+        <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto font-light">{{ home_content.hero_fallback_text|default:"Premium tools, machinery, and safety equipment for professional applications."|safe }}</p>
         <a href="/products/"
             class="bg-white text-gray-900 px-8 py-3 rounded font-bold hover:bg-secondary hover:text-white transition uppercase tracking-widest text-sm">View
             Catalog</a>
@@ -88,8 +87,20 @@
 {% endif %}
 
 <!-- Features Strip -->
+{% if home_content.features_section_enabled %}
 <div class="bg-primary text-white py-12 border-b border-gray-800">
     <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+        {% for feature in home_features %}
+        <div
+            class="flex items-center justify-center md:justify-start gap-4 p-4 border border-gray-700 bg-gray-800 bg-opacity-50 rounded hover:border-secondary transition cursor-default">
+            <i class="{{ feature.icon }} text-secondary text-3xl"></i>
+            <div>
+                <h4 class="font-bold uppercase text-sm">{{ feature.title }}</h4>
+                <p class="text-xs text-gray-400">{{ feature.subtitle }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Default features if none in DB -->
         <div
             class="flex items-center justify-center md:justify-start gap-4 p-4 border border-gray-700 bg-gray-800 bg-opacity-50 rounded hover:border-secondary transition cursor-default">
             <i class="fas fa-shipping-fast text-secondary text-3xl"></i>
@@ -98,39 +109,17 @@
                 <p class="text-xs text-gray-400">Nationwide Shipping</p>
             </div>
         </div>
-        <div
-            class="flex items-center justify-center md:justify-start gap-4 p-4 border border-gray-700 bg-gray-800 bg-opacity-50 rounded hover:border-secondary transition cursor-default">
-            <i class="fas fa-certificate text-secondary text-3xl"></i>
-            <div>
-                <h4 class="font-bold uppercase text-sm">Certified Quality</h4>
-                <p class="text-xs text-gray-400">100% Genuine Products</p>
-            </div>
-        </div>
-        <div
-            class="flex items-center justify-center md:justify-start gap-4 p-4 border border-gray-700 bg-gray-800 bg-opacity-50 rounded hover:border-secondary transition cursor-default">
-            <i class="fas fa-headset text-secondary text-3xl"></i>
-            <div>
-                <h4 class="font-bold uppercase text-sm">Expert Support</h4>
-                <p class="text-xs text-gray-400">Technical Assistance</p>
-            </div>
-        </div>
-        <div
-            class="flex items-center justify-center md:justify-start gap-4 p-4 border border-gray-700 bg-gray-800 bg-opacity-50 rounded hover:border-secondary transition cursor-default">
-            <i class="fas fa-file-invoice text-secondary text-3xl"></i>
-            <div>
-                <h4 class="font-bold uppercase text-sm">Bulk Inquiries</h4>
-                <p class="text-xs text-gray-400">Special B2B Pricing</p>
-            </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
+{% endif %}
 
 <!-- Featured Categories -->
 <section class="py-20 bg-gray-50">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
-            <span class="text-secondary font-bold tracking-widest uppercase text-xs">Our Collection</span>
-            <h2 class="text-4xl font-black text-gray-900 uppercase mt-2">Browse Categories</h2>
+            <span class="text-secondary font-bold tracking-widest uppercase text-xs">{{ home_content.categories_subtitle|default:"Our Collection" }}</span>
+            <h2 class="text-4xl font-black text-gray-900 uppercase mt-2">{{ home_content.categories_title|default:"Browse Categories" }}</h2>
             <div class="w-20 h-1 bg-gray-200 mx-auto mt-4 rounded-full">
                 <div class="w-10 h-1 bg-secondary rounded-full"></div>
             </div>
@@ -182,8 +171,8 @@
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-end mb-12 border-b border-gray-200 pb-4">
             <div>
-                <span class="text-secondary font-bold tracking-widest uppercase text-xs">Top Picks</span>
-                <h2 class="text-3xl font-black text-gray-900 uppercase mt-1">Featured Products</h2>
+                <span class="text-secondary font-bold tracking-widest uppercase text-xs">{{ home_content.featured_products_subtitle|default:"Top Picks" }}</span>
+                <h2 class="text-3xl font-black text-gray-900 uppercase mt-1">{{ home_content.featured_products_title|default:"Featured Products" }}</h2>
             </div>
             <a href="/products/"
                 class="text-gray-500 hover:text-secondary font-bold text-sm uppercase tracking-wide hidden md:block">
@@ -255,7 +244,7 @@
 <!-- Brand Showcase -->
 <section class="py-16 bg-gray-50 border-t border-gray-200 overflow-hidden">
     <div class="container mx-auto px-4 text-center">
-        <h2 class="text-lg font-bold text-gray-400 uppercase tracking-[0.3em] mb-10">Trusted By Industry Leaders</h2>
+        <h2 class="text-lg font-bold text-gray-400 uppercase tracking-[0.3em] mb-10">{{ home_content.brands_title|default:"Trusted By Industry Leaders" }}</h2>
         <!-- Marquee Container -->
         <div class="flex overflow-hidden relative">
             <!-- Single wrapper for all items (original + duplicate) to ensure connected flow -->
@@ -295,17 +284,16 @@
     <div class="absolute -right-20 -top-20 w-96 h-96 bg-secondary rounded-full opacity-20 blur-3xl"></div>
 
     <div class="container mx-auto px-4 relative z-10 text-center">
-        <h2 class="text-4xl md:text-5xl font-black mb-6 leading-tight">Ready to Optimize Your Production?</h2>
-        <p class="text-gray-300 mb-10 max-w-2xl mx-auto text-xl font-light">Get custom quotes, technical specifications,
-            and bulk pricing for all your industrial needs.</p>
+        <h2 class="text-4xl md:text-5xl font-black mb-6 leading-tight">{{ home_content.cta_title|default:"Ready to Optimize Your Production?" }}</h2>
+        <div class="text-gray-300 mb-10 max-w-2xl mx-auto text-xl font-light">{{ home_content.cta_text|default:"Get custom quotes, technical specifications, and bulk pricing for all your industrial needs."|safe }}</div>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/contact/"
+            <a href="{{ home_content.cta_btn_link|default:" /contact/" }}"
                 class="bg-secondary text-white px-10 py-4 rounded font-bold hover:bg-white hover:text-secondary transition shadow-2xl uppercase tracking-widest text-sm transform hover:-translate-y-1">
-                Request a Quote
+                {{ home_content.cta_btn_text|default:"Request a Quote" }}
             </a>
-            <a href="/catalogs/"
+            <a href="{{ home_content.catalog_btn_link|default:" /catalogs/" }}"
                 class="bg-transparent border-2 border-white text-white px-10 py-4 rounded font-bold hover:bg-white hover:text-primary transition uppercase tracking-widest text-sm">
-                Download Catalog
+                {{ home_content.catalog_btn_text|default:"Download Catalog" }}
             </a>
         </div>
     </div>

@@ -1,0 +1,73 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}{{ title }} | Virja Admin{% endblock %}
+
+{% block extra_head %}
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+    <div class="flex justify-between items-center mb-6 border-b pb-2">
+        <h2 class="text-xl font-bold text-gray-800">{{ title }}</h2>
+        <a href="{% url 'dashboard:brand_list' %}" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2"
+                    for="{{ form.name.id_for_label }}">Name</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.name.errors|striptags }}</p>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2"
+                    for="{{ form.slug.id_for_label }}">Slug</label>
+                {{ form.slug }}
+                {% if form.slug.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.slug.errors|striptags }}</p>
+                {% endif %}
+            </div>
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2"
+                    for="{{ form.logo.id_for_label }}">Logo</label>
+                {{ form.logo }}
+                {% if form.logo.errors %}
+                <p class="text-xs text-red-500 mt-1">{{ form.logo.errors|striptags }}</p>
+                {% endif %}
+            </div>
+            <div class="flex items-center mt-6">
+                <div class="mr-2">{{ form.is_featured }}</div>
+                <label class="block text-sm text-gray-900 font-medium" for="{{ form.is_featured.id_for_label }}">Is
+                    Featured</label>
+            </div>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+            <p class="text-xs text-red-500 mt-1">{{ form.description.errors|striptags }}</p>
+            {% endif %}
+        </div>
+
+        <div class="mt-8 pt-6 border-t flex justify-end gap-4">
+            <a href="{% url 'dashboard:brand_list' %}"
+                class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-6 rounded transition">
+                Cancel
+            </a>
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded transition">
+                Save Brand
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

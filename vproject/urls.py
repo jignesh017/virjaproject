@@ -22,6 +22,8 @@ from core import views as core_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('summernote/', include('django_summernote.urls')),
+    path('dashboard/', include('dashboard.urls')),
     path('', include('core.urls')),
     path('products/', include('products.urls')),
     path('brands/', include('brands.urls')),

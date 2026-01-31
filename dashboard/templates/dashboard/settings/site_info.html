@@ -1,0 +1,159 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}Site Settings | Virja Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Global Site Settings</h2>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="space-y-8">
+
+            <!-- TOP SECTION: Identity & Contact (Grid) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- LEFT: Brand Identity -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-fit">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Brand Identity</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <p class="text-red-500 text-xs mt-1">{{ form.name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Logo</label>
+                                {{ form.logo }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Favicon</label>
+                                {{ form.favicon }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Contact Details -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 h-fit">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Contact Details</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                            {{ form.address }}
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                {{ form.phone }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                {{ form.email }}
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-gray-100">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Header Phone
+                                    (Optional)</label>
+                                {{ form.header_phone }}
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Header Email
+                                    (Optional)</label>
+                                {{ form.header_email }}
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps Embed Code</label>
+                            {{ form.map_embed_code }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MIDDLE SECTION: Social Media (Full Width or Grid) -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Social Media</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center gap-3">
+                        <i class="fab fa-facebook text-blue-600 text-xl w-6"></i>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Facebook</label>
+                            {{ form.facebook }}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fab fa-twitter text-blue-400 text-xl w-6"></i>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Twitter (X)</label>
+                            {{ form.twitter }}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fab fa-instagram text-pink-600 text-xl w-6"></i>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Instagram</label>
+                            {{ form.instagram }}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fab fa-linkedin text-blue-800 text-xl w-6"></i>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">LinkedIn</label>
+                            {{ form.linkedin }}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <i class="fab fa-youtube text-red-600 text-xl w-6"></i>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">YouTube</label>
+                            {{ form.youtube }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM SECTION: Web Content (Full Width) -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Web Content & Descriptions</h3>
+                <div class="space-y-8">
+                    <div>
+                        <label class="block text-lg font-medium text-gray-700 mb-2">About Us</label>
+                        {{ form.about_us }}
+                    </div>
+                    <div class="space-y-8 mt-8">
+                        <div>
+                            <label class="block text-lg font-medium text-gray-700 mb-2">Mission</label>
+                            {{ form.mission }}
+                        </div>
+                        <div>
+                            <label class="block text-lg font-medium text-gray-700 mb-2">Vision</label>
+                            {{ form.vision }}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-lg font-medium text-gray-700 mb-2">Footer Description</label>
+                        {{ form.footer_description }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Button Section -->
+            <div class="flex justify-end pt-0 border-t border-gray-100">
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-lg shadow-md transition duration-300 transform hover:scale-105">
+                    Save Settings
+                </button>
+            </div>
+
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .models import Enquiry
 from core.models import CompanyInfo
+from core.utils import send_custom_email
 
 def contact(request):
     company_info = CompanyInfo.objects.first()
@@ -19,12 +20,11 @@ def contact(request):
         # Send Email
         subject = f"New Business Enquiry from {name}"
         msg_body = f"Name: {name}\nEmail: {email}\nPhone: {phone}\n\nMessage:\n{message}"
-        try:
-            # Uncomment logic if SMTP is configured, otherwise simulate
-            # send_mail(subject, msg_body, settings.DEFAULT_FROM_EMAIL, [settings.DEFAULT_FROM_EMAIL], fail_silently=True)
-            pass
-        except:
-            pass
+        
+        # Get admin email from CompanyInfo
+        admin_email = company_info.email if company_info else None
+        if admin_email:
+            send_custom_email(subject, msg_body, [admin_email])
         
         # Simulate success for demo
         messages.success(request, "Your enquiry has been submitted. We will contact you shortly.")

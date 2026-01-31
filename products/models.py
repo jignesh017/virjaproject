@@ -12,7 +12,6 @@ class Product(models.Model):
     specification = models.TextField(help_text="JSON or HTML specifications", blank=True)
     main_image = models.ImageField(upload_to='products/')
     pdf_brochure = models.FileField(upload_to='products/pdfs/', null=True, blank=True)
-    related_products = models.ManyToManyField('self', blank=True)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
