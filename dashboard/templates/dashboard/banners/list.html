@@ -1,0 +1,94 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}Manage Hero Banners | Virja Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">Hero Banners</h2>
+        <a href="{% url 'dashboard:banner_create' %}"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition flex items-center gap-2">
+            <i class="fas fa-plus"></i> Add New Banner
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-gray-50 border-b border-gray-200">
+                <tr>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest">Image</th>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest">Title</th>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Order
+                    </th>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Status
+                    </th>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest text-right">Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for banner in banners %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4">
+                        <div class="w-20 h-12 rounded overflow-hidden bg-gray-100 border border-gray-200">
+                            {% if banner.image %}
+                            <img src="{{ banner.image.url }}" alt="{{ banner.title }}"
+                                class="w-full h-full object-cover">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-400">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-semibold text-gray-900">{{ banner.title }}</div>
+                        {% if banner.subtitle %}
+                        <div class="text-xs text-gray-500 truncate max-w-xs">{{ banner.subtitle }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span
+                            class="inline-flex items-center justify-center bg-gray-100 text-gray-800 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                            {{ banner.order }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        {% if banner.is_active %}
+                        <span
+                            class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span> Active
+                        </span>
+                        {% else %}
+                        <span
+                            class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                            <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> Inactive
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right space-x-2">
+                        <a href="{% url 'dashboard:banner_edit' banner.pk %}"
+                            class="text-blue-600 hover:text-blue-900 transition" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'dashboard:banner_delete' banner.pk %}"
+                            class="text-red-500 hover:text-red-700 transition" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-images fa-3x mb-4 text-gray-300"></i>
+                            <p>No banners found. Start by adding one!</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

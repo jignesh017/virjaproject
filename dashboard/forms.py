@@ -1,6 +1,7 @@
 from django import forms
 from django_summernote.widgets import SummernoteWidget
 from core.models import CompanyInfo, HomePageContent, HomeFeature, SMTPSettings
+from banners.models import Banner
 from products.models import Product
 from categories.models import Category
 from brands.models import Brand
@@ -150,3 +151,8 @@ class CatalogForm(TailwindMixin, forms.ModelForm):
         widgets = {
             'pdf_file': forms.FileInput(attrs={'accept': '.pdf'}),
         }
+
+class BannerForm(TailwindMixin, forms.ModelForm):
+    class Meta:
+        model = Banner
+        fields = '__all__'

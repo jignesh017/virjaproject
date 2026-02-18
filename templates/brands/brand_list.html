@@ -14,8 +14,8 @@ Brands | Virja Industries
         {% if brands %}
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {% for brand in brands %}
-            <div
-                class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition p-6 flex flex-col items-center justify-center text-center group relative">
+            <a href="{% url 'product_list' %}?brand={{ brand.slug }}"
+                class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition p-6 flex flex-col items-center justify-center text-center group relative block">
                 <div class="h-32 w-full flex items-center justify-center mb-4">
                     {% if brand.logo %}
                     <img src="{{ brand.logo.url }}" alt="{{ brand.name }}"
@@ -25,11 +25,9 @@ Brands | Virja Industries
                     {% endif %}
                 </div>
                 <h2 class="text-lg font-bold text-gray-800 group-hover:text-primary transition">
-                    <a href="{% url 'product_list' %}?brand={{ brand.slug }}" class="stretched-link">
-                        {{ brand.name }}
-                    </a>
+                    {{ brand.name }}
                 </h2>
-            </div>
+            </a>
             {% endfor %}
         </div>
         {% else %}

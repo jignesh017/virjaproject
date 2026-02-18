@@ -75,4 +75,10 @@ urlpatterns = [
     path('catalogs/add/', views.catalog_add, name='catalog_add'),
     path('catalogs/<int:pk>/edit/', views.catalog_edit, name='catalog_edit'),
     path('catalogs/<int:pk>/delete/', views.catalog_delete, name='catalog_delete'),
+
+    # Hero Banners
+    path('banners/', views.banner_list, name='banner_list'),
+    path('banners/add/', views.banner_create, name='banner_create'),
+    path('banners/<int:pk>/edit/', views.banner_edit, name='banner_edit'),
+    path('banners/<int:pk>/delete/', views.banner_delete, name='banner_delete'),
 ]

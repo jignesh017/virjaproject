@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from core.models import CompanyInfo, HomePageContent, HomeFeature, SMTPSettings, NewsletterSubscriber
+from banners.models import Banner
 from products.models import Product
 from categories.models import Category
 from brands.models import Brand
@@ -14,8 +15,8 @@ from enquiries.models import Enquiry
 from .forms import (
     CompanyInfoForm, HomePageContentForm, HomeFeatureForm, 
     ProductForm, CategoryForm, BrandForm, SMTPSettingsForm,
-    ProductForm, CategoryForm, BrandForm, SMTPSettingsForm,
-    NewsletterSendForm, CatalogForm, AdminProfileForm, CustomPasswordChangeForm
+    NewsletterSendForm, CatalogForm, AdminProfileForm, CustomPasswordChangeForm,
+    BannerForm
 )
 from catalogs.models import Catalog
 from django.utils import timezone
@@ -61,7 +62,10 @@ def home(request):
     stats = {
         'total_products': Product.objects.count(),
         'total_categories': Category.objects.count(),
+        'total_catalogs': Catalog.objects.count(),
+        'newsletter_count': NewsletterSubscriber.objects.count(),
         'total_brands': Brand.objects.count(),
+        'total_banners': Banner.objects.count(),
         'new_enquiries': Enquiry.objects.filter(is_read=False).count(),
     }
     return render(request, 'dashboard/home.html', {'stats': stats})
@@ -435,4 +439,52 @@ def admin_profile(request):
     return render(request, 'dashboard/profile.html', {
         'profile_form': profile_form,
         'password_form': password_form
+    })
+
+# Banner Management
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def banner_list(request):
+    banners = Banner.objects.all().order_by('order')
+    return render(request, 'dashboard/banners/list.html', {'banners': banners})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def banner_create(request):
+    if request.method == 'POST':
+        form = BannerForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Banner created successfully.")
+            return redirect('dashboard:banner_list')
+    else:
+        form = BannerForm()
+    return render(request, 'dashboard/banners/form.html', {'form': form, 'title': 'Add Banner'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def banner_edit(request, pk):
+    banner = Banner.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = BannerForm(request.POST, request.FILES, instance=banner)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Banner updated successfully.")
+            return redirect('dashboard:banner_list')
+    else:
+        form = BannerForm(instance=banner)
+    return render(request, 'dashboard/banners/form.html', {'form': form, 'title': 'Edit Banner'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def banner_delete(request, pk):
+    banner = Banner.objects.get(pk=pk)
+    if request.method == 'POST':
+        banner.delete()
+        messages.success(request, "Banner deleted successfully.")
+        return redirect('dashboard:banner_list')
+    return render(request, 'dashboard/catalog/category_confirm_delete.html', {
+        'item': banner,
+        'type': 'Banner',
+        'cancel_url': 'dashboard:banner_list'
     })
