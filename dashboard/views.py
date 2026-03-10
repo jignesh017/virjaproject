@@ -123,7 +123,38 @@ def smtp_settings_view(request):
 @user_passes_test(admin_required, login_url='dashboard:login')
 def product_list(request):
     products = Product.objects.all().select_related('category', 'brand').order_by('-created_at')
-    return render(request, 'dashboard/catalog/product_list.html', {'products': products})
+    
+    q = request.GET.get('q')
+    category_id = request.GET.get('category')
+    brand_id = request.GET.get('brand')
+    status = request.GET.get('status')
+    
+    selected_cat_list = [int(category_id)] if category_id and category_id.isdigit() else []
+    selected_brand_list = [int(brand_id)] if brand_id and brand_id.isdigit() else []
+    selected_status_list = [status] if status in ['0', '1'] else []
+    
+    if q:
+        products = products.filter(name__icontains=q)
+    if category_id:
+        products = products.filter(category_id=category_id)
+    if brand_id:
+        products = products.filter(brand_id=brand_id)
+    if status:
+        is_active = status == '1'
+        products = products.filter(is_active=is_active)
+        
+    categories = Category.objects.all().order_by('name')
+    brands = Brand.objects.all().order_by('name')
+    
+    context = {
+        'products': products,
+        'categories': categories,
+        'brands': brands,
+        'selected_cat_list': selected_cat_list,
+        'selected_brand_list': selected_brand_list,
+        'selected_status_list': selected_status_list,
+    }
+    return render(request, 'dashboard/catalog/product_list.html', context)
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
@@ -166,13 +197,45 @@ def product_delete(request, pk):
 @user_passes_test(admin_required, login_url='dashboard:login')
 def category_list(request):
     categories = Category.objects.all().order_by('order', 'name')
-    return render(request, 'dashboard/catalog/category_list.html', {'categories': categories})
+    
+    q = request.GET.get('q')
+    featured = request.GET.get('featured')
+    
+    selected_featured_list = [featured] if featured in ['0', '1'] else []
+    
+    if q:
+        categories = categories.filter(name__icontains=q)
+    if featured:
+        is_featured = featured == '1'
+        categories = categories.filter(is_featured=is_featured)
+        
+    context = {
+        'categories': categories,
+        'selected_featured_list': selected_featured_list,
+    }
+    return render(request, 'dashboard/catalog/category_list.html', context)
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
 def brand_list(request):
     brands = Brand.objects.all().order_by('name')
-    return render(request, 'dashboard/catalog/brand_list.html', {'brands': brands})
+    
+    q = request.GET.get('q')
+    featured = request.GET.get('featured')
+    
+    selected_featured_list = [featured] if featured in ['0', '1'] else []
+    
+    if q:
+        brands = brands.filter(name__icontains=q)
+    if featured:
+        is_featured = featured == '1'
+        brands = brands.filter(is_featured=is_featured)
+        
+    context = {
+        'brands': brands,
+        'selected_featured_list': selected_featured_list,
+    }
+    return render(request, 'dashboard/catalog/brand_list.html', context)
 
 # Category CRUD
 @login_required(login_url='dashboard:login')
@@ -251,11 +314,104 @@ def brand_delete(request, pk):
     return render(request, 'dashboard/catalog/brand_confirm_delete.html', {'item': brand, 'type': 'Brand', 'cancel_url': 'dashboard:brand_list'})
 
 # Enquiry Management
+from django.db.models import Q
+
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
 def enquiry_list(request):
     enquiries = Enquiry.objects.all().order_by('-created_at')
-    return render(request, 'dashboard/enquiries/list.html', {'enquiries': enquiries})
+    
+    q = request.GET.get('q')
+    status = request.GET.get('status')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    
+    selected_status_list = [status] if status in ['new', 'read', 'replied'] else []
+    
+    if q:
+        enquiries = enquiries.filter(
+            Q(name__icontains=q) |
+            Q(email__icontains=q) |
+            Q(phone__icontains=q) |
+            Q(message__icontains=q)
+        )
+    
+    if status == 'new':
+        enquiries = enquiries.filter(is_read=False)
+    elif status == 'read':
+        enquiries = enquiries.filter(is_read=True, is_replied=False)
+    elif status == 'replied':
+        enquiries = enquiries.filter(is_replied=True)
+
+    if date_from:
+        enquiries = enquiries.filter(created_at__date__gte=date_from)
+    if date_to:
+        enquiries = enquiries.filter(created_at__date__lte=date_to)
+        
+    context = {
+        'enquiries': enquiries,
+        'selected_status_list': selected_status_list,
+        'date_from': date_from,
+        'date_to': date_to,
+    }
+    return render(request, 'dashboard/enquiries/list.html', context)
+
+import csv
+from django.http import HttpResponse
+from datetime import date
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def enquiries_export(request):
+    enquiries = Enquiry.objects.all().order_by('-created_at')
+    
+    q = request.GET.get('q')
+    status = request.GET.get('status')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    
+    if q:
+        enquiries = enquiries.filter(
+            Q(name__icontains=q) |
+            Q(email__icontains=q) |
+            Q(phone__icontains=q) |
+            Q(message__icontains=q)
+        )
+    
+    if status == 'new':
+        enquiries = enquiries.filter(is_read=False)
+    elif status == 'read':
+        enquiries = enquiries.filter(is_read=True, is_replied=False)
+    elif status == 'replied':
+        enquiries = enquiries.filter(is_replied=True)
+
+    if date_from:
+        enquiries = enquiries.filter(created_at__date__gte=date_from)
+    if date_to:
+        enquiries = enquiries.filter(created_at__date__lte=date_to)
+
+    today = date.today().strftime('%d-%m-%Y')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="inquirys_{today}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Name', 'Email', 'Phone', 'Message', 'Status', 'Replied At'])
+    
+    for enquiry in enquiries:
+        status_text = 'Replied' if enquiry.is_replied else ('Read' if enquiry.is_read else 'New')
+        replied_at = enquiry.replied_at.strftime('%Y-%m-%d %H:%M:%S') if enquiry.replied_at else ''
+        
+        writer.writerow([
+            enquiry.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            enquiry.name,
+            enquiry.email,
+            enquiry.phone,
+            enquiry.message,
+            status_text,
+            replied_at
+        ])
+        
+    return response
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')

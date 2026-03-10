@@ -63,6 +63,7 @@ urlpatterns = [
 
     # Enquiries
     path('enquiries/', views.enquiry_list, name='enquiry_list'),
+    path('enquiries/export/', views.enquiries_export, name='enquiries_export'),
     path('enquiries/<int:pk>/', views.enquiry_detail, name='enquiry_detail'),
     path('enquiries/<int:pk>/delete/', views.enquiry_delete, name='enquiry_delete'),
 
