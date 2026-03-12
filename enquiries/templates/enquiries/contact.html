@@ -70,11 +70,11 @@
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-phone-alt text-secondary w-8"></i>
-                            <span>{{ company_info.phone }}</span>
+                            <a href="tel:{{ company_info.phone }}" class="hover:text-secondary transition">{{ company_info.phone }}</a>
                         </li>
                         <li class="flex items-center">
                             <i class="fas fa-envelope text-secondary w-8"></i>
-                            <span>{{ company_info.email }}</span>
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ company_info.email }}" target="_blank" class="hover:text-secondary transition">{{ company_info.email }}</a>
                         </li>
                     </ul>
                     {% else %}

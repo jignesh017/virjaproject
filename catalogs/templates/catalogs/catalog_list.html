@@ -27,10 +27,17 @@
                     </div>
                 </div>
                 <h3 class="font-bold text-gray-800 text-lg mb-2 text-center">{{ catalog.title }}</h3>
-                <a href="{{ catalog.pdf_file.url }}" target="_blank"
-                    class="block w-full text-center bg-primary text-white py-2 rounded font-semibold hover:bg-secondary transition">
-                    Download PDF
-                </a>
+                <div class="flex gap-2 w-full mt-3">
+                    <a href="{{ catalog.pdf_file.url }}" target="_blank"
+                        class="flex-1 text-center bg-primary text-white py-2 rounded font-semibold hover:bg-secondary transition text-sm">
+                        View
+                    </a>
+                    <a href="{{ catalog.pdf_file.url }}" download
+                        class="w-12 flex items-center justify-center bg-gray-200 text-gray-700 py-2 rounded font-semibold hover:bg-secondary hover:text-white transition"
+                        title="Download PDF">
+                        <i class="fas fa-download"></i>
+                    </a>
+                </div>
             </div>
             {% empty %}
             <p class="col-span-4 text-center text-gray-500">No catalogs available at the moment.</p>
