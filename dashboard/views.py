@@ -472,6 +472,29 @@ def newsletter_list(request):
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
+def newsletter_export(request):
+    subscribers = NewsletterSubscriber.objects.all().order_by('-subscribed_at')
+    
+    today = date.today().strftime('%d-%m-%Y')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="newsletter_subscribers_{today}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Email', 'Subscribed At', 'Status'])
+    
+    for sub in subscribers:
+        status_text = 'Active' if sub.is_active else 'Inactive'
+        
+        writer.writerow([
+            sub.email,
+            sub.subscribed_at.strftime('%Y-%m-%d %H:%M:%S'),
+            status_text
+        ])
+        
+    return response
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
 def newsletter_send(request):
     if request.method == 'POST':
         form = NewsletterSendForm(request.POST)

@@ -69,6 +69,7 @@ urlpatterns = [
 
     # Newsletter
     path('newsletter/', views.newsletter_list, name='newsletter_list'),
+    path('newsletter/export/', views.newsletter_export, name='export_newsletter_subscribers'),
     path('newsletter/send/', views.newsletter_send, name='newsletter_send'),
     path('newsletter/<int:pk>/delete/', views.newsletter_delete, name='newsletter_delete'),
     # Catalog PDFs
