@@ -3,8 +3,23 @@
 {% block title %}About Us | Virja Industries{% endblock %}
 
 {% block content %}
+<style>
+    .rich-content * {
+        max-width: 100% !important;
+        height: auto !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        white-space: normal !important;
+    }
+    .rich-content table {
+        width: 100% !important;
+        overflow-x: auto;
+        display: block;
+    }
+</style>
+
 <div class="bg-white py-12">
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4 overflow-hidden">
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-800 uppercase border-b-4 border-secondary inline-block pb-2">
                 About Us
@@ -12,9 +27,9 @@
         </div>
 
         {% if company_info %}
-        <div class="max-w-6xl mx-auto">
+        <div class="max-w-6xl mx-auto w-full">
             {% if company_info.about_us %}
-            <div class="prose prose-lg text-gray-700 mb-12">
+            <div class="text-sm md:text-base lg:text-lg text-gray-700 mb-12 max-w-full overflow-x-hidden break-words leading-relaxed rich-content">
                 {{ company_info.about_us|safe }}
             </div>
             {% else %}
@@ -25,14 +40,14 @@
                 {% if company_info.mission|striptags %}
                 <div class="bg-gray-50 p-6 rounded border-l-4 border-primary h-full">
                     <h3 class="text-xl font-bold text-primary mb-3 uppercase">Our Mission</h3>
-                    <div class="text-gray-700 prose prose-sm max-w-none">{{ company_info.mission|safe }}</div>
+                    <div class="text-gray-700 text-sm md:text-base max-w-full overflow-x-hidden break-words leading-relaxed rich-content">{{ company_info.mission|safe }}</div>
                 </div>
                 {% endif %}
 
                 {% if company_info.vision|striptags %}
                 <div class="bg-gray-50 p-6 rounded border-l-4 border-secondary h-full">
                     <h3 class="text-xl font-bold text-secondary mb-3 uppercase">Our Vision</h3>
-                    <div class="text-gray-700 prose prose-sm max-w-none">{{ company_info.vision|safe }}</div>
+                    <div class="text-gray-700 text-sm md:text-base max-w-full overflow-x-hidden break-words leading-relaxed rich-content">{{ company_info.vision|safe }}</div>
                 </div>
                 {% endif %}
             </div>

@@ -12,14 +12,16 @@ def contact(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
+        company_name = request.POST.get('company_name', '')
+        state = request.POST.get('state', '')
         message = request.POST.get('message')
 
         # Save to DB
-        Enquiry.objects.create(name=name, email=email, phone=phone, message=message)
+        Enquiry.objects.create(name=name, email=email, phone=phone, company_name=company_name, state=state, message=message)
 
         # Send Email
         subject = f"New Business Enquiry from {name}"
-        msg_body = f"Name: {name}\nEmail: {email}\nPhone: {phone}\n\nMessage:\n{message}"
+        msg_body = f"Name: {name}\nCompany: {company_name}\nEmail: {email}\nPhone: {phone}\nState: {state}\n\nMessage:\n{message}"
         
         # Get admin email from CompanyInfo
         admin_email = company_info.email if company_info else None

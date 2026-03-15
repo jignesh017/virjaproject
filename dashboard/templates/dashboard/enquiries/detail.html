@@ -22,6 +22,14 @@
             </div>
 
             <div class="space-y-4">
+                <div class="flex border-b pb-2 mt-4">
+                    <span class="w-24 text-gray-500 text-sm">Company:</span>
+                    <span class="text-gray-800 font-medium">{{ enquiry.company_name|default:"Not Provided" }}</span>
+                </div>
+                <div class="flex border-b pb-2">
+                    <span class="w-24 text-gray-500 text-sm">State:</span>
+                    <span class="text-gray-800 font-medium">{{ enquiry.state|default:"Not Provided" }}</span>
+                </div>
                 <div class="flex border-b pb-2">
                     <span class="w-24 text-gray-500 text-sm">Email:</span>
                     <span class="text-gray-800 font-medium">{{ enquiry.email }}</span>
