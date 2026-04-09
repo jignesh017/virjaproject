@@ -101,6 +101,20 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{% url 'dashboard:pricelist_list' %}"
+                            class="flex items-center gap-3 px-4 py-3 rounded hover:bg-gray-800 transition text-gray-300 hover:text-white {% if 'pricelist' in request.resolver_match.url_name %}bg-gray-800 text-white{% endif %}">
+                            <i class="fas fa-file-invoice-dollar w-5 text-center"></i>
+                            <span class="font-medium">Price Lists</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'dashboard:certificate_list' %}"
+                            class="flex items-center gap-3 px-4 py-3 rounded hover:bg-gray-800 transition text-gray-300 hover:text-white {% if 'certificate' in request.resolver_match.url_name %}bg-gray-800 text-white{% endif %}">
+                            <i class="fas fa-certificate w-5 text-center"></i>
+                            <span class="font-medium">Certificates</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{% url 'dashboard:category_list' %}"
                             class="flex items-center gap-3 px-4 py-3 rounded hover:bg-gray-800 transition text-gray-300 hover:text-white {% if request.resolver_match.url_name == 'category_list' %}bg-gray-800 text-white{% endif %}">
                             <i class="fas fa-folder w-5 text-center"></i>

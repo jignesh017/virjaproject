@@ -3,36 +3,90 @@
 {% block title %}Certificates | Virja Industries{% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 py-12" x-data="{ lightboxOpen: false, activeImage: '' }">
+<div class="bg-gray-50 py-12" x-data="{ isModalOpen: false, modalUrl: '', modalTitle: '', modalIsImage: false }">
     <div class="container mx-auto px-4">
-        <h1
-            class="text-3xl font-bold text-gray-800 mb-8 text-center uppercase border-b-4 border-secondary inline-block pb-2">
-            Our Certificates</h1>
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 uppercase border-b-4 border-secondary inline-block pb-2">
+                Our Certificates
+            </h1>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {% for cert in certificates %}
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition cursor-pointer"
-                @click="activeImage = '{{ cert.image_or_pdf.url }}'; lightboxOpen = true">
-                <div
-                    class="h-64 bg-gray-100 flex items-center justify-center mb-4 overflow-hidden rounded border border-gray-100">
-                    <img src="{{ cert.image_or_pdf.url }}" alt="{{ cert.title }}" class="w-full h-full object-contain">
+            {% for certificate in certificates %}
+            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition flex flex-col items-center">
+                <div class="h-48 w-full bg-gray-100 flex items-center justify-center mb-4 overflow-hidden rounded border border-gray-100 relative group cursor-pointer" 
+                     @click="isModalOpen = true; modalUrl = '{{ certificate.image_or_pdf.url }}'; modalTitle = '{{ certificate.title }}'; modalIsImage = {% if certificate.is_image %}true{% else %}false{% endif %}">
+                    
+                    {% if certificate.is_image %}
+                    <img src="{{ certificate.image_or_pdf.url }}" alt="{{ certificate.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    {% else %}
+                    <i class="fas fa-certificate fa-4x text-primary group-hover:scale-110 transition-transform"></i>
+                    {% endif %}
+                    
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-eye text-white fa-2x"></i>
+                    </div>
                 </div>
-                <h3 class="font-bold text-gray-800 text-center">{{ cert.title }}</h3>
+                <h3 class="font-bold text-gray-800 text-lg mb-2 text-center">{{ certificate.title }}</h3>
+                <div class="flex gap-2 w-full mt-3">
+                    <button @click="isModalOpen = true; modalUrl = '{{ certificate.image_or_pdf.url }}'; modalTitle = '{{ certificate.title }}'; modalIsImage = {% if certificate.is_image %}true{% else %}false{% endif %}" 
+                            class="w-full text-center bg-primary text-white py-2 rounded font-semibold hover:bg-secondary transition text-sm">
+                        View
+                    </button>
+                </div>
             </div>
             {% empty %}
-            <p class="col-span-4 text-center text-gray-500">No certificates available.</p>
+            <p class="col-span-4 text-center text-gray-500">No certificates available at the moment.</p>
             {% endfor %}
         </div>
     </div>
 
-    <!-- Lightbox Modal -->
-    <div x-show="lightboxOpen" style="display: none;"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
-        @click.self="lightboxOpen = false" x-transition.opacity>
-        <div class="relative max-w-4xl w-full max-h-screen">
-            <button @click="lightboxOpen = false"
-                class="absolute -top-10 right-0 text-white text-3xl hover:text-gray-300">&times;</button>
-            <img :src="activeImage" class="max-w-full max-h-[90vh] mx-auto rounded shadow-2xl">
+    <!-- Modal -->
+    <div x-show="isModalOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            
+            <div x-show="isModalOpen" 
+                 x-transition:enter="ease-out duration-300" 
+                 x-transition:enter-start="opacity-0" 
+                 x-transition:enter-end="opacity-100" 
+                 x-transition:leave="ease-in duration-200" 
+                 x-transition:leave-start="opacity-100" 
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="isModalOpen = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div x-show="isModalOpen"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title" x-text="modalTitle">
+                                Certificate
+                            </h3>
+                            <div class="mt-2 h-[70vh] w-full flex justify-center items-center">
+                                <template x-if="modalIsImage">
+                                    <img :src="modalUrl" class="max-w-full max-h-full object-contain rounded shadow" :alt="modalTitle">
+                                </template>
+                                <template x-if="!modalIsImage">
+                                    <iframe :src="modalUrl" class="w-full h-full border-0" allowfullscreen></iframe>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" @click="isModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -83,4 +83,16 @@ urlpatterns = [
     path('banners/add/', views.banner_create, name='banner_create'),
     path('banners/<int:pk>/edit/', views.banner_edit, name='banner_edit'),
     path('banners/<int:pk>/delete/', views.banner_delete, name='banner_delete'),
+
+    # Price Lists
+    path('pricelists/', views.pricelist_list_view, name='pricelist_list'),
+    path('pricelists/add/', views.pricelist_add, name='pricelist_add'),
+    path('pricelists/<int:pk>/edit/', views.pricelist_edit, name='pricelist_edit'),
+    path('pricelists/<int:pk>/delete/', views.pricelist_delete, name='pricelist_delete'),
+
+    # Certificates
+    path('certificates-admin/', views.certificate_list_view, name='certificate_list'),
+    path('certificates-admin/add/', views.certificate_add, name='certificate_add'),
+    path('certificates-admin/<int:pk>/edit/', views.certificate_edit, name='certificate_edit'),
+    path('certificates-admin/<int:pk>/delete/', views.certificate_delete, name='certificate_delete'),
 ]

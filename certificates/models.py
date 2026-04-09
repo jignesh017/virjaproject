@@ -7,3 +7,10 @@ class Certificate(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def is_image(self):
+        if not self.image_or_pdf:
+            return False
+        ext = str(self.image_or_pdf.name).lower().split('.')[-1]
+        return ext in ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']

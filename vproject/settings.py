@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'banners',
     'catalogs',
     'certificates',
+    'pricelists',
     'enquiries',
     'django_summernote',
 ]
@@ -142,4 +143,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email Configuration
 EMAIL_BACKEND = 'core.backends.DatabaseEmailBackend'
-
+X_FRAME_OPTIONS = 'SAMEORIGIN'

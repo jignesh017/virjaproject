@@ -6,6 +6,8 @@ from products.models import Product
 from categories.models import Category
 from brands.models import Brand
 from catalogs.models import Catalog
+from certificates.models import Certificate
+from pricelists.models import PriceList
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 
@@ -150,6 +152,22 @@ class CatalogForm(TailwindMixin, forms.ModelForm):
         fields = '__all__'
         widgets = {
             'pdf_file': forms.FileInput(attrs={'accept': '.pdf'}),
+        }
+
+class PriceListForm(TailwindMixin, forms.ModelForm):
+    class Meta:
+        model = PriceList
+        fields = '__all__'
+        widgets = {
+            'pdf_file': forms.FileInput(attrs={'accept': '.pdf'}),
+        }
+
+class CertificateForm(TailwindMixin, forms.ModelForm):
+    class Meta:
+        model = Certificate
+        fields = '__all__'
+        widgets = {
+            'image_or_pdf': forms.FileInput(attrs={'accept': '.pdf,image/*'}),
         }
 
 class BannerForm(TailwindMixin, forms.ModelForm):

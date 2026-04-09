@@ -16,9 +16,11 @@ from .forms import (
     CompanyInfoForm, HomePageContentForm, HomeFeatureForm, 
     ProductForm, CategoryForm, BrandForm, SMTPSettingsForm,
     NewsletterSendForm, CatalogForm, AdminProfileForm, CustomPasswordChangeForm,
-    BannerForm
+    BannerForm, PriceListForm, CertificateForm
 )
 from catalogs.models import Catalog
+from pricelists.models import PriceList
+from certificates.models import Certificate
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.conf import settings
@@ -667,3 +669,100 @@ def banner_delete(request, pk):
         'type': 'Banner',
         'cancel_url': 'dashboard:banner_list'
     })
+
+# Price List Management
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def pricelist_list_view(request):
+    pricelists = PriceList.objects.all().order_by('-created_at')
+    return render(request, 'dashboard/catalogs/list.html', {'catalogs': pricelists, 'type': 'Price List', 'add_url': 'dashboard:pricelist_add', 'edit_url': 'dashboard:pricelist_edit', 'delete_url': 'dashboard:pricelist_delete'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def pricelist_add(request):
+    if request.method == 'POST':
+        form = PriceListForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Price List uploaded successfully.")
+            return redirect('dashboard:pricelist_list')
+    else:
+        form = PriceListForm()
+    return render(request, 'dashboard/catalogs/form.html', {'form': form, 'title': 'Upload Price List'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def pricelist_edit(request, pk):
+    pricelist = PriceList.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = PriceListForm(request.POST, request.FILES, instance=pricelist)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Price List updated successfully.")
+            return redirect('dashboard:pricelist_list')
+    else:
+        form = PriceListForm(instance=pricelist)
+    return render(request, 'dashboard/catalogs/form.html', {'form': form, 'title': 'Edit Price List'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def pricelist_delete(request, pk):
+    pricelist = PriceList.objects.get(pk=pk)
+    if request.method == 'POST':
+        pricelist.delete()
+        messages.success(request, "Price List deleted successfully.")
+        return redirect('dashboard:pricelist_list')
+    return render(request, 'dashboard/catalog/category_confirm_delete.html', {
+        'item': pricelist,
+        'type': 'Price List',
+        'cancel_url': 'dashboard:pricelist_list'
+    })
+
+# Certificate Management
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def certificate_list_view(request):
+    certificates = Certificate.objects.all().order_by('-created_at')
+    return render(request, 'dashboard/catalogs/list.html', {'catalogs': certificates, 'type': 'Certificate', 'add_url': 'dashboard:certificate_add', 'edit_url': 'dashboard:certificate_edit', 'delete_url': 'dashboard:certificate_delete', 'cert_mode': True})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def certificate_add(request):
+    if request.method == 'POST':
+        form = CertificateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Certificate uploaded successfully.")
+            return redirect('dashboard:certificate_list')
+    else:
+        form = CertificateForm()
+    return render(request, 'dashboard/catalogs/form.html', {'form': form, 'title': 'Upload Certificate'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def certificate_edit(request, pk):
+    certificate = Certificate.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = CertificateForm(request.POST, request.FILES, instance=certificate)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Certificate updated successfully.")
+            return redirect('dashboard:certificate_list')
+    else:
+        form = CertificateForm(instance=certificate)
+    return render(request, 'dashboard/catalogs/form.html', {'form': form, 'title': 'Edit Certificate'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def certificate_delete(request, pk):
+    certificate = Certificate.objects.get(pk=pk)
+    if request.method == 'POST':
+        certificate.delete()
+        messages.success(request, "Certificate deleted successfully.")
+        return redirect('dashboard:certificate_list')
+    return render(request, 'dashboard/catalog/category_confirm_delete.html', {
+        'item': certificate,
+        'type': 'Certificate',
+        'cancel_url': 'dashboard:certificate_list'
+    })
+

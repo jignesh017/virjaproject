@@ -29,6 +29,7 @@ urlpatterns = [
     path('brands/', include('brands.urls')),
     path('catalogs/', include('catalogs.urls')),
     path('certificates/', include('certificates.urls')),
+    path('pricelists/', include('pricelists.urls')),
     path('contact/', include('enquiries.urls')),
     path('about/', core_views.about, name='about'),
 ]
