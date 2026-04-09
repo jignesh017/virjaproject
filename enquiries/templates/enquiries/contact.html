@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Contact Us | Virja Industries{% endblock %}
+{% block title %}Contact Us | Virja Industries
+{% endblock %}
 
 {% block content %}
 <div class="bg-gray-50 py-12">
@@ -16,14 +18,7 @@
             <div class="bg-white p-8 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-bold text-primary mb-6">Send Us an Enquiry</h2>
 
-                {% if messages %}
-                {% for message in messages %}
-                <div
-                    class="mb-4 p-4 rounded {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-                {% endif %}
+
 
                 <form method="POST" action="{% url 'contact' %}">
                     {% csrf_token %}
@@ -43,7 +38,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                         <div>
                             <label class="block text-gray-700 font-bold mb-2">Company Name</label>
-                            <input type="text" name="company_name" placeholder="Optional"
+                            <input type="text" name="company_name" required
                                 class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-secondary">
                         </div>
                         <div>
@@ -53,9 +48,10 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-bold mb-2">State</label>
-                        <select name="state" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-secondary bg-white">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">State</label>
+                            <select id="stateSelect" name="state" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-secondary bg-white">
                             <option value="" disabled selected>Select your state</option>
                             <option value="Andhra Pradesh">Andhra Pradesh</option>
                             <option value="Arunachal Pradesh">Arunachal Pradesh</option>
@@ -94,6 +90,13 @@
                             <option value="Lakshadweep">Lakshadweep</option>
                             <option value="Puducherry">Puducherry</option>
                         </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-bold mb-2">City</label>
+                            <select id="citySelect" name="city" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-secondary bg-white">
+                                <option value="" disabled selected>Select your city</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="mb-6">
@@ -159,4 +162,34 @@
         border: 0;
     }
 </style>
+
+
+<script src="{% static 'js/cities.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const stateSelect = document.getElementById("stateSelect");
+    const citySelect = document.getElementById("citySelect");
+
+    if (stateSelect && citySelect) {
+        stateSelect.addEventListener("change", function() {
+            const selectedState = this.value;
+            // The JSON from cities.js uses the 'stateCities' variable
+            const cities = typeof stateCities !== 'undefined' ? (stateCities[selectedState] || []) : [];
+            
+            citySelect.innerHTML = '<option value="" disabled selected>Select your city</option>';
+            cities.forEach(function(city) {
+                const option = document.createElement("option");
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        });
+        
+        // initialize if state already selected (like back button)
+        if (stateSelect.value) {
+            stateSelect.dispatchEvent(new Event('change'));
+        }
+    }
+});
+</script>
 {% endblock %}

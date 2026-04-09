@@ -6,6 +6,7 @@ class Enquiry(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     state = models.CharField(max_length=100, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     is_replied = models.BooleanField(default=False)

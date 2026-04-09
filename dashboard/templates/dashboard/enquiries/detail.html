@@ -18,7 +18,7 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-start mb-4">
                 <h2 class="text-xl font-bold text-gray-800">Enquiry from {{ enquiry.name }}</h2>
-                <span class="text-sm text-gray-500">{{ enquiry.created_at|date:"M d, Y H:i" }}</span>
+                <span class="text-sm text-gray-500">{{ enquiry.created_at|date:"M d, Y h:i A" }}</span>
             </div>
 
             <div class="space-y-4">
@@ -29,6 +29,10 @@
                 <div class="flex border-b pb-2">
                     <span class="w-24 text-gray-500 text-sm">State:</span>
                     <span class="text-gray-800 font-medium">{{ enquiry.state|default:"Not Provided" }}</span>
+                </div>
+                <div class="flex border-b pb-2">
+                    <span class="w-24 text-gray-500 text-sm">City:</span>
+                    <span class="text-gray-800 font-medium">{{ enquiry.city|default:"Not Provided" }}</span>
                 </div>
                 <div class="flex border-b pb-2">
                     <span class="w-24 text-gray-500 text-sm">Email:</span>
@@ -91,7 +95,7 @@
                 {% if enquiry.is_replied %}
                 <div>
                     <p class="text-gray-500 text-xs uppercase font-bold tracking-wider">Replied On</p>
-                    <p class="text-gray-800 mt-1">{{ enquiry.replied_at|date:"M d, Y H:i" }}</p>
+                    <p class="text-gray-800 mt-1">{{ enquiry.replied_at|date:"M d, Y h:i A" }}</p>
                 </div>
                 <div>
                     <p class="text-gray-500 text-xs uppercase font-bold tracking-wider">Last Reply Message</p>

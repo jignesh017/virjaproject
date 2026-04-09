@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Business Enquiry</title>
+    <style>
+        /* Reset and fundamentals */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        table {
+            border-spacing: 0;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        td {
+            padding: 0;
+        }
+
+        img {
+            border: 0;
+        }
+
+        /* Container */
+        .wrapper {
+            width: 100%;
+            background-color: #f1f5f9;
+            padding: 40px 0;
+        }
+
+        .main-table {
+            margin: 0 auto;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Header */
+        .header {
+            background-color: #0f172a;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Content */
+        .content {
+            padding: 40px 40px;
+            background-color: #ffffff;
+        }
+
+        .greeting {
+            font-size: 18px;
+            color: #334155;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        /* Quote Box for message */
+        .quote-box {
+            background-color: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+
+        .quote-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .quote-text {
+            font-style: italic;
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* Details list */
+        .details-list {
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        .detail-item {
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #1e293b;
+        }
+
+        .detail-label {
+            font-weight: 700;
+            color: #64748b;
+            display: inline-block;
+            width: 100px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #f8fafc;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <table class="main-table">
+            <!-- Header -->
+            <tr>
+                <td class="header">
+                    <h1>Virja Automation</h1>
+                </td>
+            </tr>
+
+            <!-- Content -->
+            <tr>
+                <td class="content">
+                    <div class="greeting">Hello Admin,</div>
+
+                    <div class="text">
+                        You have received a new business enquiry via the website contact form. Here are the details:
+                    </div>
+
+                    <div class="details-list">
+                        <div class="detail-item"><span class="detail-label">Name:</span> {{ name }}</div>
+                        <div class="detail-item"><span class="detail-label">Company:</span> {{ company_name|default:"Not Provided" }}</div>
+                        <div class="detail-item"><span class="detail-label">Email:</span> <a href="mailto:{{ email }}" style="color: #3b82f6;">{{ email }}</a></div>
+                        <div class="detail-item"><span class="detail-label">Phone:</span> {{ phone }}</div>
+                        <div class="detail-item"><span class="detail-label">State:</span> {{ state|default:"Not Provided" }}</div>
+                        <div class="detail-item"><span class="detail-label">City:</span> {{ city|default:"Not Provided" }}</div>
+                    </div>
+
+                    <!-- User's Message -->
+                    <div class="quote-box">
+                        <div class="quote-label">Message Requirements</div>
+                        <div class="quote-text">"{{ message|linebreaksbr }}"</div>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+                <td class="footer">
+                    <div class="footer-text">
+                        &copy; {% now "Y" %} Virja Industries. All rights reserved.<br>
+                        This is an automated notification from your website.
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>
