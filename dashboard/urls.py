@@ -67,6 +67,10 @@ urlpatterns = [
     path('enquiries/<int:pk>/', views.enquiry_detail, name='enquiry_detail'),
     path('enquiries/<int:pk>/delete/', views.enquiry_delete, name='enquiry_delete'),
 
+    # Leads
+    path('leads/', views.lead_list, name='lead_list'),
+    path('leads/export/', views.leads_export, name='leads_export'),
+
     # Newsletter
     path('newsletter/', views.newsletter_list, name='newsletter_list'),
     path('newsletter/export/', views.newsletter_export, name='export_newsletter_subscribers'),

@@ -321,7 +321,7 @@ from django.db.models import Q
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
 def enquiry_list(request):
-    enquiries = Enquiry.objects.all().order_by('-created_at')
+    enquiries = Enquiry.objects.exclude(message__startswith='Downloaded').order_by('-created_at')
     
     q = request.GET.get('q')
     status = request.GET.get('status')
@@ -351,10 +351,64 @@ def enquiry_list(request):
         enquiries = enquiries.filter(created_at__date__lte=date_to)
         
     context = {
+        'page_title': 'Business Enquiries',
         'enquiries': enquiries,
         'selected_status_list': selected_status_list,
         'date_from': date_from,
         'date_to': date_to,
+        'export_url': 'dashboard:enquiries_export',
+        'clear_url': 'dashboard:enquiry_list',
+    }
+    return render(request, 'dashboard/enquiries/list.html', context)
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def lead_list(request):
+    enquiries = Enquiry.objects.filter(message__startswith='Downloaded').order_by('-created_at')
+    
+    q = request.GET.get('q')
+    status = request.GET.get('status')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    
+    selected_status_list = [status] if status in ['new', 'read', 'replied'] else []
+    
+    if q:
+        enquiries = enquiries.filter(
+            Q(name__icontains=q) |
+            Q(email__icontains=q) |
+            Q(phone__icontains=q) |
+            Q(company_name__icontains=q) |
+            Q(message__icontains=q)
+        )
+    
+    if status == 'new':
+        enquiries = enquiries.filter(is_read=False)
+    elif status == 'read':
+        enquiries = enquiries.filter(is_read=True, is_replied=False)
+    elif status == 'replied':
+        enquiries = enquiries.filter(is_replied=True)
+
+    if date_from:
+        enquiries = enquiries.filter(created_at__date__gte=date_from)
+    if date_to:
+        enquiries = enquiries.filter(created_at__date__lte=date_to)
+        
+    enquiries_list = list(enquiries)
+    for enquiry in enquiries_list:
+        if enquiry.message and enquiry.message.startswith('Downloaded '):
+            enquiry.display_message = enquiry.message.replace('Downloaded ', '', 1)
+        else:
+            enquiry.display_message = enquiry.message
+        
+    context = {
+        'page_title': 'Download Leads',
+        'enquiries': enquiries_list,
+        'selected_status_list': selected_status_list,
+        'date_from': date_from,
+        'date_to': date_to,
+        'export_url': 'dashboard:leads_export',
+        'clear_url': 'dashboard:lead_list',
     }
     return render(request, 'dashboard/enquiries/list.html', context)
 
@@ -365,7 +419,7 @@ from datetime import date
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
 def enquiries_export(request):
-    enquiries = Enquiry.objects.all().order_by('-created_at')
+    enquiries = Enquiry.objects.exclude(message__startswith='Downloaded').order_by('-created_at')
     
     q = request.GET.get('q')
     status = request.GET.get('status')
@@ -417,6 +471,63 @@ def enquiries_export(request):
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
+def leads_export(request):
+    enquiries = Enquiry.objects.filter(message__startswith='Downloaded').order_by('-created_at')
+    
+    q = request.GET.get('q')
+    status = request.GET.get('status')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    
+    if q:
+        enquiries = enquiries.filter(
+            Q(name__icontains=q) |
+            Q(email__icontains=q) |
+            Q(phone__icontains=q) |
+            Q(company_name__icontains=q) |
+            Q(message__icontains=q)
+        )
+    
+    if status == 'new':
+        enquiries = enquiries.filter(is_read=False)
+    elif status == 'read':
+        enquiries = enquiries.filter(is_read=True, is_replied=False)
+    elif status == 'replied':
+        enquiries = enquiries.filter(is_replied=True)
+
+    if date_from:
+        enquiries = enquiries.filter(created_at__date__gte=date_from)
+    if date_to:
+        enquiries = enquiries.filter(created_at__date__lte=date_to)
+
+    today = date.today().strftime('%d-%m-%Y')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="leads_{today}.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Name', 'Company', 'Email', 'Phone', 'Downloaded Item', 'Status', 'Replied At'])
+    
+    for enquiry in enquiries:
+        status_text = 'Replied' if enquiry.is_replied else ('Read' if enquiry.is_read else 'New')
+        replied_at = enquiry.replied_at.strftime('%Y-%m-%d %H:%M:%S') if enquiry.replied_at else ''
+        
+        display_message = enquiry.message.replace('Downloaded ', '', 1) if enquiry.message and enquiry.message.startswith('Downloaded ') else enquiry.message
+        
+        writer.writerow([
+            enquiry.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            enquiry.name,
+            enquiry.company_name,
+            enquiry.email,
+            enquiry.phone,
+            display_message,
+            status_text,
+            replied_at
+        ])
+        
+    return response
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
 def enquiry_detail(request, pk):
     enquiry = Enquiry.objects.get(pk=pk)
     
@@ -447,6 +558,8 @@ def enquiry_detail(request, pk):
             else:
                 messages.warning(request, f"Reply saved to database, but failed to send email to {enquiry.email}. Please check SMTP settings.")
                 
+            if enquiry.message and enquiry.message.startswith('Downloaded'):
+                return redirect('dashboard:lead_list')
             return redirect('dashboard:enquiry_list')
 
     return render(request, 'dashboard/enquiries/detail.html', {'enquiry': enquiry})
@@ -455,14 +568,18 @@ def enquiry_detail(request, pk):
 @user_passes_test(admin_required, login_url='dashboard:login')
 def enquiry_delete(request, pk):
     enquiry = Enquiry.objects.get(pk=pk)
+    is_lead = enquiry.message and enquiry.message.startswith('Downloaded')
+    redirect_url = 'dashboard:lead_list' if is_lead else 'dashboard:enquiry_list'
+    
     if request.method == 'POST':
         enquiry.delete()
-        messages.success(request, "Enquiry deleted successfully.")
-        return redirect('dashboard:enquiry_list')
+        messages.success(request, "Item deleted successfully.")
+        return redirect(redirect_url)
+        
     return render(request, 'dashboard/catalog/category_confirm_delete.html', {
         'item': enquiry, 
-        'type': 'Enquiry', 
-        'cancel_url': 'dashboard:enquiry_list'
+        'type': 'Lead' if is_lead else 'Enquiry', 
+        'cancel_url': redirect_url
     })
 
 # Newsletter Management

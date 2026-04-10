@@ -3,7 +3,8 @@
 {% block title %}Catalogs | Virja Industries{% endblock %}
 
 {% block content %}
-<div class="bg-gray-50 py-12">
+<div class="bg-gray-50 py-12" x-data="downloadLead()">
+    {% include 'includes/download_modal.html' %}
     <div class="container mx-auto px-4">
         <div class="text-center mb-8">
             <h1 class="text-3xl font-bold text-gray-800 uppercase border-b-4 border-secondary inline-block pb-2">
@@ -14,8 +15,8 @@
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {% for catalog in catalogs %}
             <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition">
-                <div
-                    class="h-48 bg-gray-100 flex items-center justify-center mb-4 overflow-hidden rounded border border-gray-100 relative group">
+                <div @click="triggerDownload('{{ catalog.pdf_file.url }}', '{{ catalog.title|escapejs }}', 'Catalog', 'view')"
+                    class="h-48 bg-gray-100 flex items-center justify-center mb-4 overflow-hidden rounded border border-gray-100 relative group cursor-pointer">
                     {% if catalog.thumbnail %}
                     <img src="{{ catalog.thumbnail.url }}" alt="{{ catalog.title }}" class="w-full h-full object-cover">
                     {% else %}
@@ -28,15 +29,15 @@
                 </div>
                 <h3 class="font-bold text-gray-800 text-lg mb-2 text-center">{{ catalog.title }}</h3>
                 <div class="flex gap-2 w-full mt-3">
-                    <a href="{{ catalog.pdf_file.url }}" target="_blank"
+                    <button type="button" @click="triggerDownload('{{ catalog.pdf_file.url }}', '{{ catalog.title|escapejs }}', 'Catalog', 'view')"
                         class="flex-1 text-center bg-primary text-white py-2 rounded font-semibold hover:bg-secondary transition text-sm">
                         View
-                    </a>
-                    <a href="{{ catalog.pdf_file.url }}" download
+                    </button>
+                    <button type="button" @click="triggerDownload('{{ catalog.pdf_file.url }}', '{{ catalog.title|escapejs }}', 'Catalog', 'download')"
                         class="w-12 flex items-center justify-center bg-gray-200 text-gray-700 py-2 rounded font-semibold hover:bg-secondary hover:text-white transition"
                         title="Download PDF">
                         <i class="fas fa-download"></i>
-                    </a>
+                    </button>
                 </div>
             </div>
             {% empty %}

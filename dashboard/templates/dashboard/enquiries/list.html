@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Business Enquiries</h2>
-    <button type="submit" form="filterForm" formaction="{% url 'dashboard:enquiries_export' %}"
+    <h2 class="text-2xl font-bold text-gray-800">{{ page_title|default:"Business Enquiries" }}</h2>
+    <button type="submit" form="filterForm" formaction="{% url export_url|default:'dashboard:enquiries_export' %}"
         class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition flex items-center gap-2 whitespace-nowrap shadow-sm">
         <i class="fas fa-file-excel"></i> Export Excel
     </button>
@@ -21,7 +21,7 @@
                     <i class="fas fa-search text-gray-400"></i>
                 </div>
                 <input type="text" name="q" value="{{ request.GET.q }}"
-                    placeholder="Search name, email, phone or message..."
+                    placeholder="Search name, email, phone{% if page_title != 'Download Leads' %} or message{% endif %}..."
                     class="w-full pl-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
             </div>
         </div>
@@ -53,7 +53,7 @@
                 Filter
             </button>
             {% if request.GET.q or request.GET.status or request.GET.date_from or request.GET.date_to %}
-            <a href="{% url 'dashboard:enquiry_list' %}"
+            <a href="{% url clear_url|default:'dashboard:enquiry_list' %}"
                 class="flex-1 md:flex-none bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-4 rounded-md border border-red-200 transition-colors text-center shadow-sm"
                 title="Clear Filters">
                 Clear
@@ -70,7 +70,9 @@
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {% if page_title == 'Download Leads' %}Downloaded Item{% else %}Message{% endif %}
+                </th>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
@@ -82,11 +84,15 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm font-medium text-gray-900">{{ enquiry.name }}</div>
-                    {% if enquiry.company_name %}<div class="text-xs text-blue-600 font-medium">{{ enquiry.company_name }}</div>{% endif %}
+                    {% if enquiry.company_name %}
+                    <div class="text-xs text-blue-600 font-medium">{{ enquiry.company_name }}</div>
+                    {% endif %}
                     <div class="text-xs text-gray-500">{{ enquiry.email }}</div>
                     <div class="text-xs text-gray-500">{{ enquiry.phone }}</div>
+                    {% if page_title != 'Download Leads' %}
                     {% if enquiry.state %}<div class="text-xs text-gray-400">{{ enquiry.state }}</div>{% endif %}
                     {% if enquiry.city %}<div class="text-xs text-gray-400">{{ enquiry.city }}</div>{% endif %}
+                    {% endif %}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     {% if enquiry.is_replied %}
@@ -107,15 +113,17 @@
                     {% endif %}
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                    {{ enquiry.message }}
+                    {% if enquiry.display_message %}{{ enquiry.display_message }}{% else %}{{ enquiry.message }}{% endif %}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    {% if page_title != 'Download Leads' %}
                     <a href="{% url 'dashboard:enquiry_detail' enquiry.pk %}"
                         class="text-indigo-600 hover:text-indigo-900 mr-3">
                         <i class="fas fa-eye"></i> View & Reply
                     </a>
+                    {% endif %}
                     <a href="{% url 'dashboard:enquiry_delete' enquiry.pk %}" class="text-red-600 hover:text-red-900">
-                        <i class="fas fa-trash"></i>
+                        <i class="fas fa-trash"></i>{% if page_title == 'Download Leads' %} Delete{% endif %}
                     </a>
                 </td>
             </tr>
