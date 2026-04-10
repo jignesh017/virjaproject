@@ -68,7 +68,10 @@ def home(request):
         'newsletter_count': NewsletterSubscriber.objects.count(),
         'total_brands': Brand.objects.count(),
         'total_banners': Banner.objects.count(),
-        'new_enquiries': Enquiry.objects.filter(is_read=False).count(),
+        'new_enquiries': Enquiry.objects.filter(is_read=False).exclude(message__startswith='Downloaded').count(),
+        'total_leads': Enquiry.objects.filter(message__startswith='Downloaded').count(),
+        'total_pricelists': PriceList.objects.count(),
+        'total_certificates': Certificate.objects.count(),
     }
     return render(request, 'dashboard/home.html', {'stats': stats})
 

@@ -99,6 +99,18 @@
             <p class="text-2xl font-bold text-gray-800">{{ stats.total_certificates }}</p>
         </div>
     </a>
+
+    <!-- Stat Card 9: Download Leads -->
+    <a href="{% url 'dashboard:lead_list' %}"
+        class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center hover:shadow-md transition-shadow">
+        <div class="p-3 rounded-full bg-pink-100 text-pink-600 mr-4">
+            <i class="fas fa-user-tag fa-lg"></i>
+        </div>
+        <div>
+            <p class="text-gray-500 text-sm font-medium">Leads</p>
+            <p class="text-2xl font-bold text-gray-800">{{ stats.total_leads }}</p>
+        </div>
+    </a>
 </div>
 
 <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
