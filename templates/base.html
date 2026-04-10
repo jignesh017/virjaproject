@@ -70,12 +70,15 @@
         <div class="container mx-auto px-4 flex justify-between items-center text-[10px] md:text-xs">
             <!-- Left: Email & Location -->
             <div class="flex items-center gap-6">
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ company_info.email|default:'info@virjaautomation.com' }}" target="_blank"
-                    class="flex items-center gap-2 hover:text-secondary transition text-white">
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ company_info.email|default:'info@virjaautomation.com' }}"
+                    target="_blank" class="flex items-center gap-2 hover:text-secondary transition text-white">
                     <i class="fas fa-envelope text-secondary"></i>
-                    <span class="font-medium tracking-wide">{{ company_info.email|default:'info@virjaautomation.com' }}</span>
+                    {% with dl_email=company_info.email|default:'info@virjaautomation.com' %}
+                    <span class="font-medium tracking-wide">{{ dl_email }}</span>
+                    {% endwith %}
                 </a>
-                <a href="https://www.google.com/maps/search/?api=1&query={{ company_info.address|striptags|urlencode|default:'Pune,+India' }}" target="_blank" 
+                <a href="https://www.google.com/maps/search/?api=1&query={{ company_info.address|striptags|urlencode|default:'Pune,+India' }}"
+                    target="_blank"
                     class="hidden sm:flex items-center gap-2 text-white hover:text-secondary transition">
                     <i class="fas fa-map-marker-alt text-secondary"></i>
                     <span class="font-medium tracking-wide">Pune, India</span>
@@ -111,13 +114,15 @@
                     {% endif %}
 
                     {# If no social media links, show some default placeholders to satisfy user request #}
-                    {% if not company_info.facebook and not company_info.linkedin and not company_info.instagram and not company_info.twitter %}
+                    {% if not company_info.facebook and not company_info.twitter %}
+                    {% if not company_info.linkedin and not company_info.instagram %}
                     <a href="#" class="hover:text-secondary transition text-white" title="Facebook"><i
                             class="fab fa-facebook-f"></i></a>
                     <a href="#" class="hover:text-secondary transition text-white" title="LinkedIn"><i
                             class="fab fa-linkedin-in"></i></a>
                     <a href="#" class="hover:text-secondary transition text-white" title="Instagram"><i
                             class="fab fa-instagram"></i></a>
+                    {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -173,16 +178,15 @@
                 <!-- Divider -->
                 <div class="h-8 w-px bg-gray-300"></div>
 
-                <!-- Text -->
-                <div class="flex flex-col leading-tight">
-                    <h1 class="font-tech font-bold text-lg md:text-xl uppercase tracking-tight leading-none">
-                        <span style="color:#E75C01;">Virja</span>
-                        <span style="color:#1085C6;">Automation</span>
-                    </h1>
-                    <span
-                        class="font-modern text-[0.55rem] md:text-[0.65rem] font-bold text-gray-500 uppercase tracking-[0.3em]">
-                        Pvt. Ltd.
-                    </span>
+                <div class="flex flex-col items-center justify-center leading-none mt-1">
+                    <div class="font-black text-xl md:text-2xl uppercase tracking-wider"
+                        style="color:#E75C01; font-family: 'Times New Roman', serif; line-height: 0.9; -webkit-text-stroke: 0.5px #E75C01;">
+                        VIRJA
+                    </div>
+                    <div class="font-bold text-[0.45rem] md:text-[0.5rem] uppercase tracking-tighter"
+                        style="color:#1085C6; margin-top: 3px;">
+                        AUTOMATION PVT.LTD
+                    </div>
                 </div>
 
             </a>
@@ -324,7 +328,8 @@
                             class="block py-3 px-6 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-primary transition duration-200 border-r border-gray-700 border-opacity-30">Brands</a>
                     </li>
                     <li><a href="/pricelists/"
-                            class="block py-3 px-6 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-primary transition duration-200 border-r border-gray-700 border-opacity-30">Price List</a>
+                            class="block py-3 px-6 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-primary transition duration-200 border-r border-gray-700 border-opacity-30">Price
+                            List</a>
                     </li>
                     <li><a href="/certificates/"
                             class="block py-3 px-6 text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-primary transition duration-200 border-r border-gray-700 border-opacity-30">Certificate</a>
@@ -363,13 +368,15 @@
                     <a href="/brands/"
                         class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">Brands</a>
                     <a href="/pricelists/"
-                        class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">Price List</a>
+                        class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">Price
+                        List</a>
                     <a href="/certificates/"
                         class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">Certificate</a>
                     <a href="{% url 'catalog_list' %}"
                         class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">Catalogs</a>
                     <a href="/about/"
-                        class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">About Us</a>
+                        class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">About
+                        Us</a>
                     <a href="/contact/"
                         class="block py-2 px-4 bg-gray-50 rounded font-bold text-gray-700 hover:bg-primary hover:text-white">Contact</a>
                 </div>
@@ -461,7 +468,8 @@
                 <ul class="space-y-4 text-sm">
                     <li class="flex items-start">
                         <i class="fas fa-map-marker-alt mt-1 mr-3 text-secondary"></i>
-                        <a href="https://www.google.com/maps/search/?api=1&query={{ company_info.address|striptags|urlencode }}" target="_blank" class="hover:text-white transition">
+                        <a href="https://www.google.com/maps/search/?api=1&query={{ company_info.address|striptags|urlencode }}"
+                            target="_blank" class="hover:text-white transition">
                             {% if company_info.address %}
                             {{ company_info.address|safe }}
                             {% else %}
@@ -482,8 +490,10 @@
                     </li>
                     <li class="flex items-center">
                         <i class="fas fa-envelope mr-3 text-secondary"></i>
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ company_info.email|default:'info@virjaautomation.com' }}" target="_blank"
-                            class="hover:text-white transition">{{ company_info.email|default:"info@virjaautomation.com" }}</a>
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ company_info.email|default:'info@virjaautomation.com' }}"
+                            target="_blank" class="hover:text-white transition">
+                            {% with dl_email=company_info.email|default:'info@virjaautomation.com' %}{{ dl_email }}{% endwith %}
+                        </a>
                     </li>
                 </ul>
             </div>
