@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'pricelists',
     'enquiries',
     'django_summernote',
+    'cart',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +76,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.global_categories',
                 'core.context_processors.site_settings',
+                'cart.context_processors.cart_count',
             ],
         },
     },

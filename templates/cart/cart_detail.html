@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Quote Cart | Virja Industries{% endblock %}
+
+{% block content %}
+<div class="bg-white py-10" x-data="{ sending: false }">
+    <div class="container mx-auto px-4">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8 border-b pb-4">Your Quote Cart</h1>
+
+        {% if cart.items.count > 0 %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Cart Items -->
+            <div class="lg:col-span-2">
+                <div class="bg-gray-50 rounded border border-gray-200 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 text-sm uppercase tracking-wider">
+                                <th class="p-4 border-b border-gray-200">Product</th>
+                                <th class="p-4 border-b border-gray-200 text-center w-24">Qty</th>
+                                <th class="p-4 border-b border-gray-200 text-right w-24">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart.items.all %}
+                            <tr class="border-b border-gray-200 bg-white" x-data="{ 
+                                removing: false,
+                                qty: {{ item.quantity }},
+                                updating: false,
+                                add() {
+                                    this.updating = true;
+                                    fetch('{% url 'cart:cart_add' item.product.id %}', { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
+                                    .then(r => r.json()).then(d => {
+                                        if(d.status === 'success') {
+                                            this.qty++;
+                                            $dispatch('updated-cart', { count: d.cart_items_count });
+                                        }
+                                        this.updating = false;
+                                    });
+                                },
+                                decrease() {
+                                    if(this.qty <= 1) return;
+                                    this.updating = true;
+                                    fetch('{% url 'cart:cart_decrease' item.product.id %}', { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
+                                    .then(r => r.json()).then(d => {
+                                        if(d.status === 'success') {
+                                            this.qty--;
+                                            $dispatch('updated-cart', { count: d.cart_items_count });
+                                        }
+                                        this.updating = false;
+                                    });
+                                }
+                            }" x-show="!removing">
+                                <td class="p-4">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-16 h-16 bg-gray-100 rounded flex-shrink-0 flex items-center justify-center border border-gray-200 overflow-hidden p-1">
+                                            {% if item.product.main_image %}
+                                            <img src="{{ item.product.main_image.url }}" class="w-full h-full object-contain">
+                                            {% else %}
+                                            <i class="fas fa-cube text-gray-400"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <div class="text-xs text-secondary font-bold mb-1">{{ item.product.slug|upper }}</div>
+                                            <a href="{% url 'product_detail' item.product.slug %}" class="font-semibold text-gray-800 hover:text-primary transition line-clamp-2">
+                                                {{ item.product.name }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="p-4">
+                                    <div class="flex items-center justify-center space-x-2" :class="{ 'opacity-50 pointer-events-none': updating }">
+                                        <button @click="decrease()" type="button" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center transition" :disabled="qty <= 1" :class="qty <= 1 ? 'text-gray-300 cursor-not-allowed' : 'text-secondary hover:bg-secondary hover:text-white'">
+                                            <i class="fas fa-minus text-xs"></i>
+                                        </button>
+                                        <span x-text="qty" class="w-6 text-center font-bold text-gray-800 tabular-nums"></span>
+                                        <button @click="add()" type="button" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-secondary hover:bg-secondary hover:text-white transition">
+                                            <i class="fas fa-plus text-xs"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="p-4 text-right">
+                                    <button @click="removing = true; fetch('{% url 'cart:cart_remove' item.product.id %}', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}}).then(r=>r.json()).then(d=>{ if(d.status==='success'){$dispatch('updated-cart',{count:d.cart_items_count}); setTimeout(()=>window.location.reload(), 300)} })" 
+                                        class="text-red-500 hover:text-red-700 transition" title="Remove Item">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Enquiry Form -->
+            <div class="lg:col-span-1">
+                <div class="bg-gray-50 p-6 rounded border border-gray-200 shadow-sm sticky top-24">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 uppercase tracking-wider border-b border-gray-300 pb-2">Submit Quote Request</h3>
+                    <form action="{% url 'cart:cart_detail' %}" method="POST" @submit="sending = true">
+                        {% csrf_token %}
+                        <div class="space-y-4 text-sm">
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-1">Full Name *</label>
+                                <input type="text" name="name" required class="w-full bg-white border border-gray-300 rounded px-3 py-2 outline-none focus:border-secondary transition">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-1">Email Address *</label>
+                                <input type="email" name="email" required class="w-full bg-white border border-gray-300 rounded px-3 py-2 outline-none focus:border-secondary transition">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-1">Phone Number *</label>
+                                <input type="tel" name="phone" required class="w-full bg-white border border-gray-300 rounded px-3 py-2 outline-none focus:border-secondary transition">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-1">Company Name</label>
+                                <input type="text" name="company_name" class="w-full bg-white border border-gray-300 rounded px-3 py-2 outline-none focus:border-secondary transition">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-gray-700 font-bold mb-1">State</label>
+                                    <input type="text" name="state" class="w-full bg-white border border-gray-300 rounded px-3 py-2 outline-none focus:border-secondary transition">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-bold mb-1">City</label>
+                                    <input type="text" name="city" class="w-full bg-white border border-gray-300 rounded px-3 py-2 outline-none focus:border-secondary transition">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-bold mb-1">Message / Requirements</label>
+                                <textarea name="message" rows="3" class="w-full bg-white border border-gray-300 rounded px-3 py-2 outline-none focus:border-secondary transition" placeholder="Any specific requirements regarding these products?"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-primary text-white font-bold py-3 rounded hover:bg-secondary transition shadow-lg flex justify-center items-center" :class="{ 'opacity-75 cursor-not-allowed': sending }" :disabled="sending">
+                                <span x-show="!sending">Submit Request</span>
+                                <span x-show="sending"><i class="fas fa-spinner fa-spin mr-2"></i> Sending...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-20">
+            <div class="text-gray-300 mb-6"><i class="fas fa-shopping-cart fa-5x"></i></div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
+            <p class="text-gray-500 mb-8">Browse our products and add them to your cart to request a comprehensive quote.</p>
+            <a href="{% url 'product_list' %}" class="bg-primary text-white font-bold py-3 px-8 rounded shadow hover:bg-secondary transition">
+                Browse Products
+            </a>
+        </div>
+        {% endif %}
+        
+        {% if submitted_carts %}
+        <!-- Quote Request History -->
+        <div class="mt-16 pt-12 border-t border-gray-200">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-3">
+                <i class="fas fa-history text-primary"></i> Your Quote Request History
+            </h3>
+            
+            <div class="bg-white rounded border border-gray-200 shadow-sm overflow-hidden" x-data="{ 
+                showReplyModal: false, 
+                activeReply: { message: '', date: '', items: 0 },
+                viewReply(msg, date, items) {
+                    this.activeReply = { message: msg, date: date, items: items };
+                    this.showReplyModal = true;
+                }
+            }">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-sm uppercase tracking-wider text-gray-600">
+                                <th class="p-4 border-b border-gray-200">Date Submitted</th>
+                                <th class="p-4 border-b border-gray-200 text-center">Items</th>
+                                <th class="p-4 border-b border-gray-200 text-center">Status</th>
+                                <th class="p-4 border-b border-gray-200 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in submitted_carts %}
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                                <td class="p-4 text-sm font-medium text-gray-800">
+                                    {{ req.updated_at|date:"M d, Y h:i A" }}
+                                </td>
+                                <td class="p-4 text-center">
+                                    <span class="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded-full text-xs border border-gray-200">
+                                        {{ req.get_total_items }} Items
+                                    </span>
+                                </td>
+                                <td class="p-4 text-center">
+                                    {% if req.is_replied %}
+                                    <button @click="viewReply('{{ req.reply_message|escapejs }}', '{{ req.updated_at|date:'M d, Y' }}', '{{ req.get_total_items }}')" 
+                                            class="inline-flex items-center text-xs font-bold bg-green-600 text-white px-3 py-1.5 rounded-full hover:bg-green-700 transition shadow-sm">
+                                        <i class="fas fa-envelope-open-text mr-1.5"></i> View Reply
+                                    </button>
+                                    {% else %}
+                                    <span class="inline-flex items-center text-xs font-bold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full border border-yellow-200">
+                                        <i class="fas fa-clock mr-1.5"></i> Pending
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="p-4 text-right">
+                                    <a href="{% url 'cart:cart_reload' req.id %}" class="inline-flex items-center gap-2 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white border border-blue-200 px-3 py-1.5 rounded text-xs font-bold transition shadow-sm">
+                                        <i class="fas fa-redo-alt"></i> Edit & Resend
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Admin Reply Modal -->
+                <template x-teleport="body">
+                    <div x-show="showReplyModal" 
+                         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black bg-opacity-60 backdrop-blur-sm"
+                         x-transition.opacity x-cloak>
+                        
+                        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden relative transform transition-all"
+                             @click.away="showReplyModal = false"
+                             x-show="showReplyModal"
+                             x-transition.scale.95>
+                            
+                            <!-- Modal Header -->
+                            <div class="bg-primary px-6 py-4 flex justify-between items-center">
+                                <div class="flex items-center gap-3 text-white">
+                                    <div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-comment-dots text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold leading-tight">Admin Response</h3>
+                                        <p class="text-[10px] uppercase tracking-widest opacity-80" x-text="'Ref: Request from ' + activeReply.date"></p>
+                                    </div>
+                                </div>
+                                <button @click="showReplyModal = false" class="text-white hover:rotate-90 transition-transform duration-300">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
+
+                            <!-- Modal Body -->
+                            <div class="p-8">
+                                <div class="bg-gray-50 border border-gray-100 rounded-xl p-6 relative">
+                                    <i class="fas fa-quote-left text-gray-200 text-4xl absolute top-4 left-4"></i>
+                                    <div class="relative z-10 text-gray-700 leading-relaxed italic text-lg text-center" x-text="'&quot;' + activeReply.message + '&quot;'">
+                                    </div>
+                                    <i class="fas fa-quote-right text-gray-200 text-4xl absolute bottom-4 right-4"></i>
+                                </div>
+
+                                <div class="mt-8 flex items-center gap-4 bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shrink-0">
+                                        <i class="fas fa-info-circle text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-blue-700 leading-tight">
+                                            A copy of this response has been sent to your email.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal Footer -->
+                            <div class="px-8 py-4 bg-gray-50 border-t flex justify-end">
+                                <button @click="showReplyModal = false" class="bg-gray-800 text-white font-bold py-2 px-6 rounded hover:bg-black transition">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <p class="text-xs text-gray-400 mt-4 italic text-center">History is stored locally in your current browsing session.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

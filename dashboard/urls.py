@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
+from . import cart_views
 
 from .forms import CustomSetPasswordForm
 
@@ -66,6 +67,10 @@ urlpatterns = [
     path('enquiries/export/', views.enquiries_export, name='enquiries_export'),
     path('enquiries/<int:pk>/', views.enquiry_detail, name='enquiry_detail'),
     path('enquiries/<int:pk>/delete/', views.enquiry_delete, name='enquiry_delete'),
+
+    # User Carts
+    path('user-carts/', cart_views.user_carts_list, name='dashboard_carts_list'),
+    path('user-carts/<int:cart_id>/', cart_views.user_cart_detail, name='dashboard_cart_detail'),
 
     # Leads
     path('leads/', views.lead_list, name='lead_list'),

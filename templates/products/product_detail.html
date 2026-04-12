@@ -70,10 +70,62 @@
                 </div>
 
                 <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-8">
-                    <a href="/contact/?product={{ product.name|urlencode }}"
-                        class="flex-1 bg-secondary text-white text-center px-6 py-3 rounded font-bold hover:bg-red-700 transition shadow-lg flex justify-center items-center">
-                        <i class="fas fa-envelope mr-2"></i> Request Quote
-                    </a>
+                    <div class="flex-1" x-data="{ 
+                        cartQty: {{ cart_qty|default:0 }},
+                        updating: false,
+                        add() {
+                            this.updating = true;
+                            fetch('{% url 'cart:cart_add' product.id %}', { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
+                            .then(r => r.json()).then(d => {
+                                if(d.status === 'success') {
+                                    this.cartQty++;
+                                    $dispatch('updated-cart', { count: d.cart_items_count });
+                                }
+                                this.updating = false;
+                            });
+                        },
+                        decrease() {
+                            this.updating = true;
+                            fetch('{% url 'cart:cart_decrease' product.id %}', { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
+                            .then(r => r.json()).then(d => {
+                                if(d.status === 'success') {
+                                    this.cartQty--;
+                                    $dispatch('updated-cart', { count: d.cart_items_count });
+                                }
+                                this.updating = false;
+                            });
+                        }
+                    }">
+                        <!-- Add Button -->
+                        <button type="button" x-show="cartQty === 0" @click="add()"
+                            class="w-full bg-secondary text-white text-center px-6 py-3 rounded font-bold hover:bg-red-700 transition shadow-lg flex justify-center items-center"
+                            :class="{ 'opacity-50 cursor-not-allowed': updating }" :disabled="updating">
+                            <i class="fas mr-2" :class="updating ? 'fa-spinner fa-spin' : 'fa-cart-plus'"></i>
+                            <span>Add to Quote</span>
+                        </button>
+
+                        <!-- Quantity Controls -->
+                        <div x-show="cartQty > 0"
+                            class="w-full flex items-center justify-between bg-white border-2 border-secondary rounded overflow-hidden shadow-sm"
+                            x-cloak>
+                            <button type="button" @click="decrease()"
+                                class="w-12 h-12 flex flex-shrink-0 items-center justify-center bg-gray-50 hover:bg-red-50 text-secondary transition font-bold text-lg"
+                                :disabled="updating">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <div class="flex-1 text-center font-bold text-gray-800 flex flex-col justify-center select-none"
+                                :class="{ 'opacity-50': updating }">
+                                <span class="text-[10px] text-gray-500 uppercase tracking-widest leading-none mb-0.5">In
+                                    Cart</span>
+                                <span x-text="cartQty" class="text-base leading-none"></span>
+                            </div>
+                            <button type="button" @click="add()"
+                                class="w-12 h-12 flex flex-shrink-0 items-center justify-center bg-secondary hover:bg-red-700 text-white transition font-bold text-lg"
+                                :disabled="updating">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
                     {% if product.pdf_brochure %}
                     <a href="{{ product.pdf_brochure.url }}" target="_blank"
                         class="flex-1 border-2 border-primary text-primary text-center px-6 py-3 rounded font-bold hover:bg-primary hover:text-white transition flex justify-center items-center">

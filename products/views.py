@@ -43,8 +43,18 @@ def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
     related_products = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id)[:4]
     
+    cart_qty = 0
+    if request.session.session_key:
+        from cart.models import CartItem
+        try:
+            cart_item = CartItem.objects.get(cart__session_key=request.session.session_key, product=product)
+            cart_qty = cart_item.quantity
+        except CartItem.DoesNotExist:
+            pass
+
     context = {
         'product': product,
         'related_products': related_products,
+        'cart_qty': cart_qty,
     }
     return render(request, 'products/product_detail.html', context)

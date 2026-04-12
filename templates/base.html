@@ -63,7 +63,9 @@
     </style>
 </head>
 
-<body class="flex flex-col min-h-screen bg-gray-50 text-gray-800">
+<body class="flex flex-col min-h-screen bg-gray-50 text-gray-800 overflow-x-hidden"
+    x-data="{ cartCount: {{ cart_items_count|default:0 }}, cartAnimating: false }"
+    @updated-cart.window="cartCount = $event.detail.count; cartAnimating = true; setTimeout(() => cartAnimating = false, 300)">
 
     <!-- Top Bar -->
     <div class="bg-primary text-white py-2 border-b border-gray-800">
@@ -221,17 +223,31 @@
                         {% endif %}
                     </a>
                 </div>
-                <a href="/contact/"
-                    class="bg-secondary text-white px-6 py-2.5 rounded shadow-lg shadow-red-100 hover:shadow-red-200 font-bold text-sm hover:bg-red-700 transition flex items-center gap-2 transform hover:-translate-y-0.5">
-                    <span>Get Quote</span> <i class="fas fa-arrow-right text-xs"></i>
+                <a href="{% url 'cart:cart_detail' %}"
+                    class="bg-secondary text-white px-4 py-2.5 rounded shadow-lg shadow-red-100 hover:shadow-red-200 font-bold text-sm hover:bg-red-700 transition flex items-center justify-center relative duration-300"
+                    :class="cartAnimating ? 'scale-125 bg-red-600' : 'hover:-translate-y-0.5'">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="hidden md:ml-2 md:inline">Cart</span>
+                    <span x-text="cartCount"
+                        class="absolute -top-2 -right-2 bg-gray-900 border-2 border-white text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-black shadow-md"></span>
                 </a>
             </div>
 
-            <!-- Mobile Menu Button -->
-            <button @click="mobileMenuOpen = !mobileMenuOpen"
-                class="md:hidden text-2xl text-gray-700 hover:text-primary transition p-2 w-10 flex justify-center items-center">
-                <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
-            </button>
+            <!-- Mobile Actions -->
+            <div class="flex items-center gap-2 md:hidden">
+                <a href="{% url 'cart:cart_detail' %}"
+                    class="text-gray-700 hover:text-primary transition p-2 relative duration-300"
+                    :class="cartAnimating ? 'scale-125 text-secondary' : ''">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span x-show="cartCount > 0" x-text="cartCount"
+                        class="absolute top-0 right-0 bg-secondary border border-white text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold"></span>
+                </a>
+                <!-- Mobile Menu Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen"
+                    class="text-2xl text-gray-700 hover:text-primary transition p-2 w-10 flex justify-center items-center">
+                    <i class="fas" :class="mobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Navigation Bar -->

@@ -136,6 +136,13 @@
                         </a>
                     </li>
                     <li>
+                        <a href="{% url 'dashboard:dashboard_carts_list' %}"
+                            class="flex items-center gap-3 px-4 py-3 rounded hover:bg-gray-800 transition text-gray-300 hover:text-white {% if 'cart' in request.resolver_match.url_name %}bg-gray-800 text-white{% endif %}">
+                            <i class="fas fa-shopping-basket w-5 text-center"></i>
+                            <span class="font-medium">User Carts</span>
+                        </a>
+                    </li>
+                    <li>
                         <a href="{% url 'dashboard:lead_list' %}"
                             class="flex items-center gap-3 px-4 py-3 rounded hover:bg-gray-800 transition text-gray-300 hover:text-white {% if 'lead' in request.resolver_match.url_name %}bg-gray-800 text-white{% endif %}">
                             <i class="fas fa-user-tag w-5 text-center"></i>
