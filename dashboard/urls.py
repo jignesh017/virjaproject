@@ -70,7 +70,9 @@ urlpatterns = [
 
     # User Carts
     path('user-carts/', cart_views.user_carts_list, name='dashboard_carts_list'),
+    path('user-carts/export/', cart_views.user_carts_export, name='dashboard_carts_export'),
     path('user-carts/<int:cart_id>/', cart_views.user_cart_detail, name='dashboard_cart_detail'),
+    path('user-carts/<int:cart_id>/delete/', cart_views.user_cart_delete, name='dashboard_cart_delete'),
 
     # Leads
     path('leads/', views.lead_list, name='lead_list'),

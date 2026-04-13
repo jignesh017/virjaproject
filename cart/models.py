@@ -5,6 +5,7 @@ class Cart(models.Model):
     # Use session_key to track carts for anonymous users
     session_key = models.CharField(max_length=40, unique=True, null=True, blank=True)
     is_submitted = models.BooleanField(default=False)
+    is_read = models.BooleanField(default=False)
     # Submitter Details (No longer attached to Enquiry Model)
     name = models.CharField(max_length=255, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
