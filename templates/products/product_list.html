@@ -104,7 +104,8 @@ Products | Virja Industries
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for product in page_obj %}
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition group flex flex-col cursor-pointer"
-                    data-url="{% url 'product_detail' product.slug %}" onclick="window.location.href=this.dataset.url">
+                    data-url="{% url 'product_detail' product.slug %}" onclick="window.location.href=this.dataset.url"
+                    x-data="{ updating: false }">
                     <div
                         class="h-56 p-4 relative overflow-hidden flex items-center justify-center bg-white border-b border-gray-100">
                         {% if product.main_image %}
@@ -128,9 +129,27 @@ Products | Virja Industries
                             <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
                         </h2>
 
-                        <a href="{% url 'product_detail' product.slug %}"
-                            class="mt-auto block text-center bg-gray-100 text-gray-800 py-2 rounded hover:bg-primary hover:text-white transition font-semibold text-sm">Detailed
-                            Specs</a>
+                        <div class="mt-auto flex gap-2">
+                            <a href="{% url 'product_detail' product.slug %}"
+                                class="flex-1 text-center bg-gray-100 text-gray-800 py-2 rounded hover:bg-primary hover:text-white transition font-semibold text-sm">Detailed
+                                Specs</a>
+                            <button type="button" 
+                                @click.stop="
+                                    updating = true;
+                                    fetch('{% url 'cart:cart_add' product.id %}', { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
+                                    .then(r => r.json()).then(d => {
+                                        if(d.status === 'success') {
+                                            $dispatch('updated-cart', { count: d.cart_items_count });
+                                        }
+                                        updating = false;
+                                    });
+                                "
+                                class="w-11 bg-secondary text-white py-2 rounded hover:bg-red-700 transition font-bold text-sm flex items-center justify-center shrink-0"
+                                title="Add to Cart"
+                                :class="{ 'opacity-50 cursor-not-allowed': updating }" :disabled="updating">
+                                <i class="fas" :class="updating ? 'fa-spinner fa-spin' : 'fa-cart-plus'"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}

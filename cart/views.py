@@ -28,6 +28,29 @@ def cart_add(request, product_id):
     return JsonResponse({'status': 'success', 'cart_items_count': cart.get_total_items()})
 
 @require_POST
+def cart_update(request, product_id):
+    cart = get_or_create_cart(request)
+    product = get_object_or_404(Product, id=product_id)
+    
+    try:
+        quantity = int(request.POST.get('quantity', 1))
+    except (ValueError, TypeError):
+        quantity = 1
+        
+    if quantity > 0:
+        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+        cart_item.quantity = quantity
+        cart_item.save()
+    else:
+        try:
+            cart_item = CartItem.objects.get(cart=cart, product=product)
+            cart_item.delete()
+        except CartItem.DoesNotExist:
+            pass
+            
+    return JsonResponse({'status': 'success', 'cart_items_count': cart.get_total_items()})
+
+@require_POST
 def cart_remove(request, product_id):
     cart = get_or_create_cart(request)
     product = get_object_or_404(Product, id=product_id)
