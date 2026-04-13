@@ -1,5 +1,5 @@
 from django.core.mail import get_connection, send_mail
-from django.core.mail.message import EmailMessage
+from django.core.mail.message import EmailMessage, EmailMultiAlternatives
 from core.models import SMTPSettings
 from django.conf import settings
 import logging
@@ -29,7 +29,7 @@ def get_custom_email_connection():
         logger.error(f"Failed to create email connection: {e}")
         return None
 
-def send_custom_email(subject, message, recipient_list, from_email=None, html_message=None):
+def send_custom_email(subject, message, recipient_list, from_email=None, html_message=None, attachments=None):
     """
     Sends an email using the custom SMTP settings from the database.
     If no settings are found, falls back to default Django settings.
@@ -44,7 +44,8 @@ def send_custom_email(subject, message, recipient_list, from_email=None, html_me
                 from_email = smtp.default_from_email
             
             try:
-                email = EmailMessage(
+                # Use EmailMultiAlternatives for both text and HTML
+                email = EmailMultiAlternatives(
                     subject,
                     message,
                     from_email,
@@ -52,8 +53,12 @@ def send_custom_email(subject, message, recipient_list, from_email=None, html_me
                     connection=connection
                 )
                 if html_message:
-                    email.content_subtype = "html"  # Main content is now text/html
-                    email.body = html_message
+                    email.attach_alternative(html_message, "text/html")
+                
+                if attachments:
+                    for attachment in attachments:
+                        # attachment should be tuple (filename, content, mimetype)
+                        email.attach(*attachment)
                 
                 email.send(fail_silently=False)
                 return True
@@ -61,14 +66,46 @@ def send_custom_email(subject, message, recipient_list, from_email=None, html_me
                 logger.error(f"Failed to send custom email: {e}")
                 print(f"DEBUG: Failed to send custom email: {e}")
     
-    # Fallback to default Django send_mail
+    # Fallback to default Django send_mail/EmailMessage
     try:
-        send_mail(subject, message, from_email or settings.DEFAULT_FROM_EMAIL, recipient_list, fail_silently=False, html_message=html_message)
+        if attachments:
+            email = EmailMultiAlternatives(
+                subject,
+                message,
+                from_email or settings.DEFAULT_FROM_EMAIL,
+                recipient_list
+            )
+            if html_message:
+                email.attach_alternative(html_message, "text/html")
+            for attachment in attachments:
+                email.attach(*attachment)
+            email.send(fail_silently=False)
+        else:
+            send_mail(subject, message, from_email or settings.DEFAULT_FROM_EMAIL, recipient_list, fail_silently=False, html_message=html_message)
         return True
     except Exception as e:
         logger.error(f"Failed to send fallback email: {e}")
         print(f"DEBUG: Failed to send fallback email: {e}")
         return False
+    
+    # Fallback to default Django send_mail
+    try:
+        if attachments:
+            # send_mail doesn't support attachments easily, use EmailMessage for fallback too
+            email = EmailMessage(
+                subject,
+                html_message or message,
+                from_email or settings.DEFAULT_FROM_EMAIL,
+                recipient_list
+            )
+            if html_message:
+                email.content_subtype = "html"
+            for attachment in attachments:
+                email.attach(*attachment)
+            email.send(fail_silently=False)
+        else:
+            send_mail(subject, message, from_email or settings.DEFAULT_FROM_EMAIL, recipient_list, fail_silently=False, html_message=html_message)
+        return True
     except Exception as e:
         logger.error(f"Failed to send fallback email: {e}")
         print(f"DEBUG: Failed to send fallback email: {e}")
