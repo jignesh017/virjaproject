@@ -540,7 +540,7 @@
         <a href="tel:{% if company_info.phone %}{{ company_info.phone }}{% else %}+911234567890{% endif %}"
            class="bg-[#0066cc] text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-[0_4px_10px_rgba(0,102,204,0.4)] hover:bg-[#0052a3] hover:scale-110 transition-transform duration-300"
            title="Call Us">
-            <i class="fas fa-phone-alt"></i>
+            <i class="fas fa-phone"></i>
         </a>
         <!-- WhatsApp Button -->
         <a href="{% if company_info.whatsapp_link %}{{ company_info.whatsapp_link }}{% else %}https://wa.me/{% if company_info.phone %}{{ company_info.phone|cut:' '|cut:'+'|cut:'-' }}{% else %}911234567890{% endif %}{% endif %}"
