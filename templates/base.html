@@ -180,14 +180,12 @@
                 <!-- Divider -->
                 <div class="h-8 w-px bg-gray-300"></div>
 
-                <div class="flex flex-col items-center justify-center leading-none mt-1">
-                    <div class="font-black text-xl md:text-2xl uppercase tracking-wider"
-                        style="color:#E75C01; font-family: 'Times New Roman', serif; line-height: 0.9; -webkit-text-stroke: 0.5px #E75C01;">
+                <div class="flex flex-col items-center justify-center leading-none mt-1 ml-2">
+                    <div class="font-black text-xl md:text-2xl uppercase tracking-[0.15em] text-[#E75C01] font-sans leading-none">
                         VIRJA
                     </div>
-                    <div class="font-bold text-[0.45rem] md:text-[0.5rem] uppercase tracking-tighter"
-                        style="color:#1085C6; margin-top: 3px;">
-                        AUTOMATION PVT.LTD
+                    <div class="font-bold text-[0.45rem] md:text-[0.5rem] uppercase tracking-widest text-[#1085C6] mt-0 leading-none">
+                        AUTOMATION
                     </div>
                 </div>
 
@@ -536,13 +534,22 @@
         </div>
     </footer>
 
-    <!-- WhatsApp Floating Button -->
-    <a href="{% if company_info.whatsapp_link %}{{ company_info.whatsapp_link }}{% else %}https://wa.me/{% if company_info.phone %}{{ company_info.phone|cut:' '|cut:'+'|cut:'-' }}{% else %}911234567890{% endif %}{% endif %}"
-       target="_blank"
-       class="fixed bottom-6 right-6 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-[0_4px_10px_rgba(37,211,102,0.4)] hover:bg-[#128C7E] hover:scale-110 transition-transform duration-300 z-50"
-       title="Chat with us on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    <!-- Floating Action Buttons -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+        <!-- Phone Button -->
+        <a href="tel:{% if company_info.phone %}{{ company_info.phone }}{% else %}+911234567890{% endif %}"
+           class="bg-[#0066cc] text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-[0_4px_10px_rgba(0,102,204,0.4)] hover:bg-[#0052a3] hover:scale-110 transition-transform duration-300"
+           title="Call Us">
+            <i class="fas fa-phone-alt"></i>
+        </a>
+        <!-- WhatsApp Button -->
+        <a href="{% if company_info.whatsapp_link %}{{ company_info.whatsapp_link }}{% else %}https://wa.me/{% if company_info.phone %}{{ company_info.phone|cut:' '|cut:'+'|cut:'-' }}{% else %}911234567890{% endif %}{% endif %}"
+           target="_blank"
+           class="bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-[0_4px_10px_rgba(37,211,102,0.4)] hover:bg-[#128C7E] hover:scale-110 transition-transform duration-300"
+           title="Chat with us on WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
 </body>
 
 </html>
