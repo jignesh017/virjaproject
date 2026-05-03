@@ -55,6 +55,7 @@ class CompanyInfoForm(TailwindMixin, forms.ModelForm):
             'instagram': 'https://instagram.com/your-handle',
             'linkedin': 'https://linkedin.com/company/your-company',
             'youtube': 'https://youtube.com/channel/your-channel',
+            'whatsapp_link': 'https://wa.me/911234567890',
             'name': 'e.g. Virja Industries',
             'address': 'Full physical address',
             'phone': '+91 98765 43210',
@@ -69,7 +70,7 @@ class CompanyInfoForm(TailwindMixin, forms.ModelForm):
 
     class Meta:
         model = CompanyInfo
-        fields = '__all__'
+        exclude = ['whatsapp_link']
         widgets = {
             'about_us': SummernoteWidget(),
             'mission': SummernoteWidget(),
@@ -78,6 +79,16 @@ class CompanyInfoForm(TailwindMixin, forms.ModelForm):
             'address': forms.Textarea(attrs={'rows': 3}),
             'map_embed_code': forms.Textarea(attrs={'rows': 3}),
         }
+
+class WhatsAppSettingForm(TailwindMixin, forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'whatsapp_link' in self.fields:
+            self.fields['whatsapp_link'].widget.attrs['placeholder'] = 'e.g. https://wa.me/911234567890'
+
+    class Meta:
+        model = CompanyInfo
+        fields = ['whatsapp_link']
 
 class HomePageContentForm(TailwindMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):

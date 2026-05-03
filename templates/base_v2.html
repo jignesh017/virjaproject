@@ -369,6 +369,14 @@
             </div>
         </div>
     </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="{% if company_info.whatsapp_link %}{{ company_info.whatsapp_link }}{% else %}https://wa.me/{% if company_info.phone %}{{ company_info.phone|cut:' '|cut:'+'|cut:'-' }}{% else %}911234567890{% endif %}{% endif %}"
+       target="_blank"
+       class="fixed bottom-6 right-6 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-[0_4px_10px_rgba(37,211,102,0.4)] hover:bg-[#128C7E] hover:scale-110 transition-transform duration-300 z-50"
+       title="Chat with us on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 </body>
 
 </html>

@@ -92,6 +92,27 @@ def site_settings_view(request):
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
+def whatsapp_settings_view(request):
+    company_info = CompanyInfo.objects.first()
+    if not company_info:
+        company_info = CompanyInfo.objects.create()
+
+    if request.method == 'POST':
+        # Need to import WhatsAppSettingForm, but we can do it by using the local import or just importing it at top
+        from .forms import WhatsAppSettingForm
+        form = WhatsAppSettingForm(request.POST, request.FILES, instance=company_info)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "WhatsApp settings updated successfully.")
+            return redirect('dashboard:whatsapp_settings')
+    else:
+        from .forms import WhatsAppSettingForm
+        form = WhatsAppSettingForm(instance=company_info)
+    
+    return render(request, 'dashboard/settings/whatsapp_settings.html', {'form': form})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
 def home_content_view(request):
     home_content = HomePageContent.objects.first()
     # Handle Features Formset or similar if needed, but for now just the main content

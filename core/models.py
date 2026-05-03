@@ -23,6 +23,7 @@ class CompanyInfo(models.Model):
     instagram = models.URLField(blank=True)
     linkedin = models.URLField(blank=True)
     youtube = models.URLField(blank=True)
+    whatsapp_link = models.URLField(blank=True, help_text="Direct WhatsApp link (e.g., https://wa.me/911234567890)")
     
     class Meta:
         verbose_name_plural = "Company Information"

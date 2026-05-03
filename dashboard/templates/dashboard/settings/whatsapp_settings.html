@@ -1,0 +1,35 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block title %}WhatsApp Settings | Virja Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">WhatsApp Settings</h2>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">WhatsApp Link</h3>
+            <p class="text-sm text-gray-500 mb-4">Set the direct WhatsApp link to be used for the floating button on the front end.</p>
+            <div class="flex items-center gap-3">
+                <i class="fab fa-whatsapp text-green-500 text-3xl w-8"></i>
+                <div class="flex-1">
+                    <label class="block text-xs font-medium text-gray-500 mb-1">WhatsApp Link (URL)</label>
+                    {{ form.whatsapp_link }}
+                </div>
+            </div>
+
+            <!-- Save Button Section -->
+            <div class="flex justify-end pt-6 mt-6 border-t border-gray-100">
+                <button type="submit"
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-8 rounded-lg shadow-md transition duration-300 transform hover:scale-105 flex items-center gap-2">
+                    <i class="fas fa-save"></i> Save Link
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

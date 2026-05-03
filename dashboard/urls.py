@@ -12,6 +12,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('settings/site/', views.site_settings_view, name='site_settings'),
+    path('settings/whatsapp/', views.whatsapp_settings_view, name='whatsapp_settings'),
     path('settings/home/', views.home_content_view, name='home_content'),
     path('settings/smtp/', views.smtp_settings_view, name='smtp_settings'),
     path('settings/smtp/', views.smtp_settings_view, name='smtp_settings'),
