@@ -24,22 +24,22 @@
         <div class="absolute inset-0">
             <img src="{{ banner.image.url }}" alt="{{ banner.title }}" class="w-full h-full object-cover object-center">
             <!-- Overlay Gradient -->
-            <div
+            {% comment %} <div
                 class="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/60 to-transparent pointer-events-none">
-            </div>
+            </div> {% endcomment %}
         </div>
 
         <!-- Content -->
         <div class="absolute inset-0 flex items-center">
             <div class="container mx-auto px-6 md:px-12 relative z-10">
                 <div class="max-w-2xl border-l-4 border-secondary pl-6 md:pl-8 overflow-hidden">
-                    <h2 x-show="activeSlide === {{ forloop.counter0 }}"
+                    {% comment %} <h2 x-show="activeSlide === {{ forloop.counter0 }}"
                         x-transition:enter="transition ease-out duration-700 delay-300 transform"
                         x-transition:enter-start="opacity-0 -translate-x-12"
                         x-transition:enter-end="opacity-100 translate-x-0"
                         class="text-2xl sm:text-2xl md:text-5xl font-bold text-white uppercase tracking-tight mb-2 md:mb-4 drop-shadow-md leading-tight">
                         {{ banner.title }}
-                    </h2>
+                    </h2> {% endcomment %}
 
                     {% if banner.link %}
                     <div x-show="activeSlide === {{ forloop.counter0 }}"
