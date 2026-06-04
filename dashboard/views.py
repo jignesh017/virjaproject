@@ -219,8 +219,6 @@ def product_delete(request, pk):
         return redirect('dashboard:product_list')
     return render(request, 'dashboard/catalog/product_confirm_delete.html', {'product': product})
 
-@login_required(login_url='dashboard:login')
-@user_passes_test(admin_required, login_url='dashboard:login')
 def product_bulk_delete(request):
     if request.method == 'POST':
         product_ids_str = request.POST.get('product_ids', '')
@@ -234,6 +232,181 @@ def product_bulk_delete(request):
         else:
             messages.warning(request, "No products selected for deletion.")
     return redirect('dashboard:product_list')
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def product_template_download(request):
+    import csv
+    from django.http import HttpResponse
+    
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="product_import_template.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow([
+        'Name', 
+        'Slug', 
+        'Category', 
+        'Brand', 
+        'Description', 
+        'Specification', 
+        'Main Image', 
+        'PDF Brochure', 
+        'Is Featured (0 or 1)', 
+        'Is Active (0 or 1)'
+    ])
+    # Sample row
+    writer.writerow([
+        'Polycab Relays Series-X661', 
+        'polycab-relays-series-x661', 
+        'Relays', 
+        'Polycab', 
+        '<p>High quality electrical relays.</p>', 
+        '{"voltage": "230V", "current": "10A"}', 
+        'products/relay.jpg', 
+        'products/pdfs/relay_brochure.pdf', 
+        '0', 
+        '1'
+    ])
+    return response
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def product_import(request):
+    import csv
+    from django.utils.text import slugify
+    
+    if request.method == 'POST':
+        csv_file = request.FILES.get('csv_file')
+        if not csv_file:
+            messages.error(request, "Please upload a CSV file.")
+            return redirect('dashboard:product_import')
+            
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, "Uploaded file is not a CSV file.")
+            return redirect('dashboard:product_import')
+            
+        try:
+            file_data = csv_file.read().decode('utf-8-sig')
+            lines = file_data.splitlines()
+            reader = csv.reader(lines)
+            try:
+                headers = next(reader)
+            except StopIteration:
+                messages.error(request, "The CSV file is empty.")
+                return redirect('dashboard:product_import')
+                
+            headers = [h.strip().lower() for h in headers]
+            
+            def find_index(names):
+                for name in names:
+                    for idx, h in enumerate(headers):
+                        if h == name or h.replace('_', ' ').replace('-', ' ') == name.replace('_', ' ').replace('-', ' '):
+                            return idx
+                return -1
+                
+            name_idx = find_index(['name'])
+            slug_idx = find_index(['slug'])
+            cat_idx = find_index(['category'])
+            brand_idx = find_index(['brand'])
+            desc_idx = find_index(['description'])
+            spec_idx = find_index(['specification', 'specifications', 'specs'])
+            img_idx = find_index(['main image', 'main_image', 'image'])
+            pdf_idx = find_index(['pdf brochure', 'pdf_brochure', 'brochure', 'pdf'])
+            feat_idx = find_index(['is featured', 'is_featured', 'featured'])
+            act_idx = find_index(['is active', 'is_active', 'active'])
+            
+            if name_idx == -1 or cat_idx == -1:
+                messages.error(request, "CSV must contain at least 'Name' and 'Category' columns.")
+                return redirect('dashboard:product_import')
+                
+            imported_count = 0
+            errors = []
+            
+            for row_idx, row in enumerate(reader, start=2):
+                if not row or all(not val.strip() for val in row):
+                    continue
+                    
+                if len(row) < len(headers):
+                    row += [''] * (len(headers) - len(row))
+                    
+                try:
+                    name_val = row[name_idx].strip() if name_idx >= 0 else ''
+                    if not name_val:
+                        errors.append(f"Row {row_idx}: Product Name is empty. Row skipped.")
+                        continue
+                        
+                    category_val = row[cat_idx].strip() if cat_idx >= 0 else ''
+                    if not category_val:
+                        errors.append(f"Row {row_idx}: Category is empty. Row skipped.")
+                        continue
+                        
+                    slug_val = row[slug_idx].strip() if slug_idx >= 0 else ''
+                    brand_val = row[brand_idx].strip() if brand_idx >= 0 else ''
+                    description_val = row[desc_idx].strip() if desc_idx >= 0 else ''
+                    specification_val = row[spec_idx].strip() if spec_idx >= 0 else ''
+                    main_image_val = row[img_idx].strip() if img_idx >= 0 else ''
+                    pdf_brochure_val = row[pdf_idx].strip() if pdf_idx >= 0 else ''
+                    
+                    featured_val = row[feat_idx].strip().lower() if feat_idx >= 0 else '0'
+                    is_featured = featured_val in ['1', 'true', 'yes']
+                    
+                    active_val = row[act_idx].strip().lower() if act_idx >= 0 else '1'
+                    is_active = active_val in ['1', 'true', 'yes'] or active_val == ''
+                    
+                    # Get or create category
+                    category, _ = Category.objects.get_or_create(name=category_val)
+                    
+                    # Get or create brand
+                    brand = None
+                    if brand_val:
+                        brand, _ = Brand.objects.get_or_create(name=brand_val)
+                        
+                    # Handle slug uniqueness
+                    if not slug_val:
+                        base_slug = slugify(name_val)
+                    else:
+                        base_slug = slugify(slug_val)
+                    
+                    slug_val = base_slug
+                    counter = 1
+                    while Product.objects.filter(slug=slug_val).exists():
+                        slug_val = f"{base_slug}-{counter}"
+                        counter += 1
+                        
+                    product = Product(
+                        name=name_val,
+                        slug=slug_val,
+                        category=category,
+                        brand=brand,
+                        description=description_val,
+                        specification=specification_val,
+                        main_image=main_image_val,
+                        pdf_brochure=pdf_brochure_val,
+                        is_featured=is_featured,
+                        is_active=is_active
+                    )
+                    product.save()
+                    imported_count += 1
+                    
+                except Exception as e:
+                    errors.append(f"Row {row_idx}: {str(e)}")
+            
+            if imported_count > 0:
+                messages.success(request, f"Successfully imported {imported_count} product(s).")
+            if errors:
+                for err in errors[:5]:  # Display first 5 errors to avoid flooding
+                    messages.error(request, err)
+                if len(errors) > 5:
+                    messages.warning(request, f"And {len(errors) - 5} other error(s) occurred.")
+                    
+            return redirect('dashboard:product_list')
+            
+        except Exception as e:
+            messages.error(request, f"Failed to process CSV file: {str(e)}")
+            return redirect('dashboard:product_import')
+            
+    return render(request, 'dashboard/catalog/product_import.html')
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')

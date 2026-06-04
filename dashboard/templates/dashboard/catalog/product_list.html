@@ -9,6 +9,10 @@
         <button id="btn-bulk-delete" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition flex items-center gap-2 whitespace-nowrap shadow-sm">
             <i class="fas fa-trash"></i> Delete Selected (<span id="selected-count">0</span>)
         </button>
+        <a href="{% url 'dashboard:product_import' %}"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded transition border border-gray-300 flex items-center gap-2 whitespace-nowrap shadow-sm">
+            <i class="fas fa-file-import"></i> Import
+        </a>
         <a href="{% url 'dashboard:product_create' %}"
             class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition flex items-center gap-2 whitespace-nowrap shadow-sm">
             <i class="fas fa-plus"></i> Add Product

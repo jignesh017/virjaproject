@@ -49,6 +49,8 @@ urlpatterns = [
     path('products/', views.product_list, name='product_list'),
     path('products/add/', views.product_create, name='product_create'),
     path('products/bulk-delete/', views.product_bulk_delete, name='product_bulk_delete'),
+    path('products/import/', views.product_import, name='product_import'),
+    path('products/template/', views.product_template_download, name='product_template_download'),
     path('products/<int:pk>/edit/', views.product_edit, name='product_edit'),
     path('products/<int:pk>/delete/', views.product_delete, name='product_delete'),
     
