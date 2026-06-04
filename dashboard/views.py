@@ -221,6 +221,22 @@ def product_delete(request, pk):
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
+def product_bulk_delete(request):
+    if request.method == 'POST':
+        product_ids_str = request.POST.get('product_ids', '')
+        if product_ids_str:
+            product_ids = [int(x) for x in product_ids_str.split(',') if x.isdigit()]
+            if product_ids:
+                deleted_count, _ = Product.objects.filter(id__in=product_ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} product(s).")
+            else:
+                messages.warning(request, "No valid products selected for deletion.")
+        else:
+            messages.warning(request, "No products selected for deletion.")
+    return redirect('dashboard:product_list')
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
 def category_list(request):
     categories = Category.objects.all().order_by('order', 'name')
     
@@ -301,6 +317,22 @@ def category_delete(request, pk):
         return redirect('dashboard:category_list')
     return render(request, 'dashboard/catalog/category_confirm_delete.html', {'item': category, 'type': 'Category', 'cancel_url': 'dashboard:category_list'})
 
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def category_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = Category.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} category/categories.")
+            else:
+                messages.warning(request, "No valid categories selected for deletion.")
+        else:
+            messages.warning(request, "No categories selected for deletion.")
+    return redirect('dashboard:category_list')
+
 # Brand CRUD
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
@@ -338,6 +370,22 @@ def brand_delete(request, pk):
         messages.success(request, "Brand deleted successfully.")
         return redirect('dashboard:brand_list')
     return render(request, 'dashboard/catalog/brand_confirm_delete.html', {'item': brand, 'type': 'Brand', 'cancel_url': 'dashboard:brand_list'})
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def brand_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = Brand.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} brand(s).")
+            else:
+                messages.warning(request, "No valid brands selected for deletion.")
+        else:
+            messages.warning(request, "No brands selected for deletion.")
+    return redirect('dashboard:brand_list')
 
 # Enquiry Management
 from django.db.models import Q
@@ -606,6 +654,24 @@ def enquiry_delete(request, pk):
         'cancel_url': redirect_url
     })
 
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def enquiry_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        is_lead = request.POST.get('is_lead') == 'true'
+        redirect_url = 'dashboard:lead_list' if is_lead else 'dashboard:enquiry_list'
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = Enquiry.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} item(s).")
+            else:
+                messages.warning(request, "No valid items selected for deletion.")
+        else:
+            messages.warning(request, "No items selected for deletion.")
+    return redirect(redirect_url)
+
 # Newsletter Management
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
@@ -687,6 +753,22 @@ def newsletter_delete(request, pk):
         'cancel_url': 'dashboard:newsletter_list'
     })
 
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def newsletter_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = NewsletterSubscriber.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} subscriber(s).")
+            else:
+                messages.warning(request, "No valid subscribers selected for deletion.")
+        else:
+            messages.warning(request, "No subscribers selected for deletion.")
+    return redirect('dashboard:newsletter_list')
+
 # Catalog PDF Management
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
@@ -734,6 +816,22 @@ def catalog_delete(request, pk):
         'type': 'Catalog',
         'cancel_url': 'dashboard:catalog_list'
     })
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def catalog_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = Catalog.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} catalog(s).")
+            else:
+                messages.warning(request, "No valid catalogs selected for deletion.")
+        else:
+            messages.warning(request, "No catalogs selected for deletion.")
+    return redirect('dashboard:catalog_list')
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
@@ -811,6 +909,22 @@ def banner_delete(request, pk):
         'cancel_url': 'dashboard:banner_list'
     })
 
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def banner_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = Banner.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} banner(s).")
+            else:
+                messages.warning(request, "No valid banners selected for deletion.")
+        else:
+            messages.warning(request, "No banners selected for deletion.")
+    return redirect('dashboard:banner_list')
+
 # Price List Management
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
@@ -859,6 +973,22 @@ def pricelist_delete(request, pk):
         'cancel_url': 'dashboard:pricelist_list'
     })
 
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def pricelist_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = PriceList.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} price list(s).")
+            else:
+                messages.warning(request, "No valid price lists selected for deletion.")
+        else:
+            messages.warning(request, "No price lists selected for deletion.")
+    return redirect('dashboard:pricelist_list')
+
 # Certificate Management
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')
@@ -906,4 +1036,20 @@ def certificate_delete(request, pk):
         'type': 'Certificate',
         'cancel_url': 'dashboard:certificate_list'
     })
+
+@login_required(login_url='dashboard:login')
+@user_passes_test(admin_required, login_url='dashboard:login')
+def certificate_bulk_delete(request):
+    if request.method == 'POST':
+        ids_str = request.POST.get('ids', '')
+        if ids_str:
+            ids = [int(x) for x in ids_str.split(',') if x.isdigit()]
+            if ids:
+                deleted_count, _ = Certificate.objects.filter(id__in=ids).delete()
+                messages.success(request, f"Successfully deleted {deleted_count} certificate(s).")
+            else:
+                messages.warning(request, "No valid certificates selected for deletion.")
+        else:
+            messages.warning(request, "No certificates selected for deletion.")
+    return redirect('dashboard:certificate_list')
 

@@ -48,24 +48,28 @@ urlpatterns = [
     # Catalog - Products
     path('products/', views.product_list, name='product_list'),
     path('products/add/', views.product_create, name='product_create'),
+    path('products/bulk-delete/', views.product_bulk_delete, name='product_bulk_delete'),
     path('products/<int:pk>/edit/', views.product_edit, name='product_edit'),
     path('products/<int:pk>/delete/', views.product_delete, name='product_delete'),
     
     # Catalog - Categories
     path('categories/', views.category_list, name='category_list'),
     path('categories/add/', views.category_create, name='category_create'),
+    path('categories/bulk-delete/', views.category_bulk_delete, name='category_bulk_delete'),
     path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
     path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
 
     # Catalog - Brands
     path('brands/', views.brand_list, name='brand_list'),
     path('brands/add/', views.brand_create, name='brand_create'),
+    path('brands/bulk-delete/', views.brand_bulk_delete, name='brand_bulk_delete'),
     path('brands/<int:pk>/edit/', views.brand_edit, name='brand_edit'),
     path('brands/<int:pk>/delete/', views.brand_delete, name='brand_delete'),
 
     # Enquiries
     path('enquiries/', views.enquiry_list, name='enquiry_list'),
     path('enquiries/export/', views.enquiries_export, name='enquiries_export'),
+    path('enquiries/bulk-delete/', views.enquiry_bulk_delete, name='enquiry_bulk_delete'),
     path('enquiries/<int:pk>/', views.enquiry_detail, name='enquiry_detail'),
     path('enquiries/<int:pk>/delete/', views.enquiry_delete, name='enquiry_delete'),
 
@@ -83,28 +87,33 @@ urlpatterns = [
     path('newsletter/', views.newsletter_list, name='newsletter_list'),
     path('newsletter/export/', views.newsletter_export, name='export_newsletter_subscribers'),
     path('newsletter/send/', views.newsletter_send, name='newsletter_send'),
+    path('newsletter/bulk-delete/', views.newsletter_bulk_delete, name='newsletter_bulk_delete'),
     path('newsletter/<int:pk>/delete/', views.newsletter_delete, name='newsletter_delete'),
     # Catalog PDFs
     path('catalogs/', views.catalog_list_view, name='catalog_list'),
     path('catalogs/add/', views.catalog_add, name='catalog_add'),
+    path('catalogs/bulk-delete/', views.catalog_bulk_delete, name='catalog_bulk_delete'),
     path('catalogs/<int:pk>/edit/', views.catalog_edit, name='catalog_edit'),
     path('catalogs/<int:pk>/delete/', views.catalog_delete, name='catalog_delete'),
 
     # Hero Banners
     path('banners/', views.banner_list, name='banner_list'),
     path('banners/add/', views.banner_create, name='banner_create'),
+    path('banners/bulk-delete/', views.banner_bulk_delete, name='banner_bulk_delete'),
     path('banners/<int:pk>/edit/', views.banner_edit, name='banner_edit'),
     path('banners/<int:pk>/delete/', views.banner_delete, name='banner_delete'),
 
     # Price Lists
     path('pricelists/', views.pricelist_list_view, name='pricelist_list'),
     path('pricelists/add/', views.pricelist_add, name='pricelist_add'),
+    path('pricelists/bulk-delete/', views.pricelist_bulk_delete, name='pricelist_bulk_delete'),
     path('pricelists/<int:pk>/edit/', views.pricelist_edit, name='pricelist_edit'),
     path('pricelists/<int:pk>/delete/', views.pricelist_delete, name='pricelist_delete'),
 
     # Certificates
     path('certificates-admin/', views.certificate_list_view, name='certificate_list'),
     path('certificates-admin/add/', views.certificate_add, name='certificate_add'),
+    path('certificates-admin/bulk-delete/', views.certificate_bulk_delete, name='certificate_bulk_delete'),
     path('certificates-admin/<int:pk>/edit/', views.certificate_edit, name='certificate_edit'),
     path('certificates-admin/<int:pk>/delete/', views.certificate_delete, name='certificate_delete'),
 ]

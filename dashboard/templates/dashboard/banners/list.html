@@ -6,16 +6,30 @@
 <div class="max-w-7xl mx-auto">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-800">Hero Banners</h2>
-        <a href="{% url 'dashboard:banner_create' %}"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition flex items-center gap-2">
-            <i class="fas fa-plus"></i> Add New Banner
-        </a>
+        <div class="flex gap-2">
+            <button id="btn-bulk-delete" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition flex items-center gap-2 whitespace-nowrap shadow-sm">
+                <i class="fas fa-trash"></i> Delete Selected (<span id="selected-count">0</span>)
+            </button>
+            <a href="{% url 'dashboard:banner_create' %}"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow transition flex items-center gap-2">
+                <i class="fas fa-plus"></i> Add New Banner
+            </a>
+        </div>
     </div>
+
+    <!-- Hidden Bulk Delete Form -->
+    <form id="bulk-delete-form" method="POST" action="{% url 'dashboard:banner_bulk_delete' %}" class="hidden">
+        {% csrf_token %}
+        <input type="hidden" name="ids" id="bulk-delete-ids">
+    </form>
 
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <table class="w-full text-left border-collapse">
             <thead class="bg-gray-50 border-b border-gray-200">
                 <tr>
+                    <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest w-10">
+                        <input type="checkbox" id="select-all-items" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4 transition duration-150 ease-in-out cursor-pointer">
+                    </th>
                     <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest">Image</th>
                     <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest">Title</th>
                     <th class="px-6 py-3 text-xs font-bold text-gray-500 uppercase tracking-widest text-center">Order
@@ -29,6 +43,9 @@
             <tbody class="divide-y divide-gray-100">
                 {% for banner in banners %}
                 <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 w-10">
+                        <input type="checkbox" value="{{ banner.pk }}" class="item-checkbox rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4 transition duration-150 ease-in-out cursor-pointer">
+                    </td>
                     <td class="px-6 py-4">
                         <div class="w-20 h-12 rounded overflow-hidden bg-gray-100 border border-gray-200">
                             {% if banner.image %}
@@ -79,7 +96,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                    <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                         <div class="flex flex-col items-center">
                             <i class="fas fa-images fa-3x mb-4 text-gray-300"></i>
                             <p>No banners found. Start by adding one!</p>
@@ -91,4 +108,65 @@
         </table>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('select-all-items');
+        const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+        const bulkDeleteBtn = document.getElementById('btn-bulk-delete');
+        const selectedCountSpan = document.getElementById('selected-count');
+        const bulkDeleteForm = document.getElementById('bulk-delete-form');
+        const bulkDeleteIdsInput = document.getElementById('bulk-delete-ids');
+
+        function updateBulkDeleteButton() {
+            const checkedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+            const count = checkedCheckboxes.length;
+            selectedCountSpan.textContent = count;
+            
+            if (count > 0) {
+                bulkDeleteBtn.classList.remove('hidden');
+            } else {
+                bulkDeleteBtn.classList.add('hidden');
+            }
+            
+            // Update select all checkbox state
+            if (count === itemCheckboxes.length && itemCheckboxes.length > 0) {
+                selectAllCheckbox.checked = true;
+                selectAllCheckbox.indeterminate = false;
+            } else if (count === 0) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = false;
+            } else {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.indeterminate = true;
+            }
+        }
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                itemCheckboxes.forEach(cb => {
+                    cb.checked = selectAllCheckbox.checked;
+                });
+                updateBulkDeleteButton();
+            });
+        }
+
+        itemCheckboxes.forEach(cb => {
+            cb.addEventListener('change', updateBulkDeleteButton);
+        });
+
+        if (bulkDeleteBtn) {
+            bulkDeleteBtn.addEventListener('click', function() {
+                const checkedCheckboxes = document.querySelectorAll('.item-checkbox:checked');
+                const ids = Array.from(checkedCheckboxes).map(cb => cb.value);
+                if (ids.length === 0) return;
+
+                if (confirm(`Are you sure you want to delete the ${ids.length} selected banner(s)?`)) {
+                    bulkDeleteIdsInput.value = ids.join(',');
+                    bulkDeleteForm.submit();
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}
