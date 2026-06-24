@@ -82,15 +82,60 @@
         <!-- Media and Settings -->
         <div>
             <h3 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b">Media & Settings</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-gray-700 text-sm font-bold mb-2"
-                        for="{{ form.main_image.id_for_label }}">Main Image</label>
-                    {{ form.main_image }}
-                    {% if form.main_image.errors %}
-                    <p class="text-xs text-red-500 mt-1">{{ form.main_image.errors|striptags }}</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Upload Gallery Images</label>
+                    
+                    <!-- Drag-and-drop Dropzone -->
+                    <div id="dropzone" class="border-2 border-dashed border-gray-300 rounded-lg p-8 hover:border-blue-500 hover:bg-blue-50/20 transition duration-150 cursor-pointer flex flex-col items-center justify-center text-center gap-2 select-none" onclick="document.getElementById('gallery_images').click()">
+                        <i class="fas fa-images text-gray-400 text-4xl"></i>
+                        <span class="text-sm font-medium text-gray-600">Drag and drop images here, or click to browse</span>
+                        <span class="text-xs text-gray-400">Supports JPG, JPEG, PNG, WEBP (Select multiple files)</span>
+                    </div>
+                    
+                    <!-- Hidden actual file input -->
+                    <input type="file" id="gallery_images" name="gallery_images" class="hidden" multiple accept="image/*" onchange="handleFileSelect(this)">
+                    <input type="hidden" name="gallery_layout" id="gallery_layout" value="">
+                    
+                    {% if form.gallery_images.errors %}
+                    <p class="text-xs text-red-500 mt-1">{{ form.gallery_images.errors|striptags }}</p>
                     {% endif %}
+
+                    <!-- Gallery Preview Grid -->
+                    <div id="gallery-wrapper" class="mt-4 border border-gray-200 rounded-lg p-6 bg-gray-50 {% if not product or not product.images.exists %}hidden{% endif %}">
+                        <h4 class="text-md font-semibold text-gray-700 mb-1">Product Gallery Preview</h4>
+                        <p class="text-xs text-gray-500 mb-4">Drag and drop cards to reorder. Click "Set Main" to choose the primary display image.</p>
+                        <div id="gallery-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            {% if product %}
+                                {% for img in product.images.all %}
+                                <div class="gallery-card relative bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm flex flex-col justify-between transition-all duration-200 cursor-grab active:cursor-grabbing hover:border-gray-300" draggable="true" data-type="existing" data-id="{{ img.id }}" data-is-main="{% if img.is_main %}true{% else %}false{% endif %}">
+                                    <!-- Image Preview -->
+                                    <div class="h-32 bg-gray-100 flex items-center justify-center p-2 relative select-none pointer-events-none">
+                                        <img src="{{ img.image.url }}" class="max-w-full max-h-full object-contain">
+                                    </div>
+
+                                    <!-- Controls -->
+                                    <div class="p-2 border-t border-gray-100 space-y-2 text-xs">
+                                        <!-- Main Image Radio / Indicator -->
+                                        <label class="flex items-center justify-center gap-1.5 py-1 px-2 border rounded cursor-pointer transition-colors duration-150 hover:bg-gray-50 select-none {% if img.is_main %}bg-green-50 border-green-300 text-green-700 font-semibold{% else %}border-gray-200 text-gray-600{% endif %}" onclick="setMainImage(this)">
+                                            <i class="fas {% if img.is_main %}fa-check-circle text-green-600{% else %}fa-circle-notch text-gray-300{% endif %}"></i>
+                                            <span>{% if img.is_main %}Main Image{% else %}Set Main{% endif %}</span>
+                                        </label>
+
+                                        <!-- Delete Control -->
+                                        <div class="flex justify-end items-center">
+                                            <button type="button" class="w-7 h-7 flex items-center justify-center rounded border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 transition" title="Delete Image" onclick="deleteCard(this)">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
+                
                 <div>
                     <label class="block text-gray-700 text-sm font-bold mb-2"
                         for="{{ form.pdf_brochure.id_for_label }}">PDF Brochure</label>
@@ -112,6 +157,299 @@
                     </div>
                 </div>
             </div>
+
+            <!-- JavaScript helper for Drag-and-Drop and Upload -->
+            <script>
+                let selectedFiles = [];
+                let draggedCard = null;
+
+                // Drag and Drop files onto dropzone
+                const dropzone = document.getElementById('dropzone');
+                if (dropzone) {
+                    dropzone.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        this.classList.add('border-blue-500', 'bg-blue-50/20');
+                    });
+
+                    dropzone.addEventListener('dragleave', function() {
+                        this.classList.remove('border-blue-500', 'bg-blue-50/20');
+                    });
+
+                    dropzone.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        this.classList.remove('border-blue-500', 'bg-blue-50/20');
+                        if (e.dataTransfer.files.length > 0) {
+                            const input = document.getElementById('gallery_images');
+                            input.files = e.dataTransfer.files;
+                            handleFileSelect(input);
+                        }
+                    });
+                }
+
+                function handleFileSelect(input) {
+                    const files = Array.from(input.files);
+                    files.forEach(file => {
+                        selectedFiles.push(file);
+                        const index = selectedFiles.length - 1;
+
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            createImageCard(e.target.result, 'new', index);
+                        }
+                        reader.readAsDataURL(file);
+                    });
+                    
+                    input.value = ''; // clear value
+                }
+
+                function createImageCard(src, type, idOrIndex) {
+                    const container = document.getElementById('gallery-container');
+                    document.getElementById('gallery-wrapper').classList.remove('hidden');
+                    
+                    const card = document.createElement('div');
+                    card.className = 'gallery-card relative bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm flex flex-col justify-between transition-all duration-200 cursor-grab active:cursor-grabbing hover:border-gray-300';
+                    card.draggable = true;
+                    
+                    if (type === 'existing') {
+                        card.setAttribute('data-type', 'existing');
+                        card.setAttribute('data-id', idOrIndex);
+                    } else {
+                        card.setAttribute('data-type', 'new');
+                        card.setAttribute('data-index', idOrIndex);
+                    }
+                    
+                    const currentMain = container.querySelector('.gallery-card[data-is-main="true"]');
+                    const isMain = !currentMain;
+                    card.setAttribute('data-is-main', isMain ? 'true' : 'false');
+                    
+                    card.innerHTML = `
+                        <div class="h-32 bg-gray-100 flex items-center justify-center p-2 relative select-none pointer-events-none">
+                            <img src="${src}" class="max-w-full max-h-full object-contain">
+                        </div>
+                        <div class="p-2 border-t border-gray-100 space-y-2 text-xs">
+                            <label class="flex items-center justify-center gap-1.5 py-1 px-2 border rounded cursor-pointer transition-colors duration-150 hover:bg-gray-50 select-none ${isMain ? 'bg-green-50 border-green-300 text-green-700 font-semibold' : 'border-gray-200 text-gray-600'}" onclick="setMainImage(this)">
+                                <i class="fas ${isMain ? 'fa-check-circle text-green-600' : 'fa-circle-notch text-gray-300'}"></i>
+                                <span>${isMain ? 'Main Image' : 'Set Main'}</span>
+                            </label>
+                            <div class="flex justify-end items-center">
+                                <button type="button" class="w-7 h-7 flex items-center justify-center rounded border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 transition" title="Delete Image" onclick="deleteCard(this)">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                    addDragHandlers(card);
+                    updateGalleryLayout();
+                }
+
+                function setMainImage(labelElement) {
+                    const selectedCard = labelElement.closest('.gallery-card');
+                    const container = document.getElementById('gallery-container');
+                    const cards = Array.from(container.querySelectorAll('.gallery-card'));
+                    
+                    const isAlreadyFirst = (container.firstElementChild === selectedCard);
+                    
+                    // Step 1: Get current layout positions (First)
+                    const firstPositions = cards.map(card => {
+                        const rect = card.getBoundingClientRect();
+                        return { left: rect.left, top: rect.top };
+                    });
+
+                    // Reset all other cards states
+                    cards.forEach(card => {
+                        card.setAttribute('data-is-main', 'false');
+                        const lbl = card.querySelector('label');
+                        lbl.className = 'flex items-center justify-center gap-1.5 py-1 px-2 border border-gray-200 text-gray-600 rounded cursor-pointer transition-colors duration-150 hover:bg-gray-50 select-none';
+                        const icon = lbl.querySelector('i');
+                        icon.className = 'fas fa-circle-notch text-gray-300';
+                        lbl.querySelector('span').innerText = 'Set Main';
+                    });
+
+                    // Set selected main state
+                    selectedCard.setAttribute('data-is-main', 'true');
+                    labelElement.className = 'flex items-center justify-center gap-1.5 py-1 px-2 border border-green-300 text-green-700 bg-green-50 rounded cursor-pointer font-semibold select-none';
+                    const icon = labelElement.querySelector('i');
+                    icon.className = 'fas fa-check-circle text-green-600';
+                    labelElement.querySelector('span').innerText = 'Main Image';
+
+                    if (!isAlreadyFirst) {
+                        // Step 2: Change DOM order (move selected to first position)
+                        container.insertBefore(selectedCard, container.firstElementChild);
+                        
+                        // Step 3: Get new layout positions (Last)
+                        const newCards = Array.from(container.querySelectorAll('.gallery-card'));
+                        const lastPositions = newCards.map(card => {
+                            const rect = card.getBoundingClientRect();
+                            return { left: rect.left, top: rect.top };
+                        });
+                        
+                        // Step 4: Invert positions
+                        newCards.forEach((card, index) => {
+                            const origIndex = cards.indexOf(card);
+                            if (origIndex !== -1) {
+                                const dx = firstPositions[origIndex].left - lastPositions[index].left;
+                                const dy = firstPositions[origIndex].top - lastPositions[index].top;
+                                
+                                card.style.transform = `translate(${dx}px, ${dy}px)`;
+                                card.style.transition = 'none';
+                            }
+                        });
+                        
+                        // Force a reflow
+                        container.offsetHeight;
+                        
+                        // Step 5: Play (animate back to origin)
+                        requestAnimationFrame(() => {
+                            newCards.forEach(card => {
+                                card.style.transition = 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s, opacity 0.2s';
+                                card.style.transform = '';
+                            });
+                        });
+                        
+                        // Clean up inline styles when transition ends
+                        setTimeout(() => {
+                            newCards.forEach(card => {
+                                card.style.transition = '';
+                            });
+                        }, 400);
+                    }
+                    
+                    updateGalleryLayout();
+                }
+
+                function deleteCard(buttonElement) {
+                    const card = buttonElement.closest('.gallery-card');
+                    const wasMain = card.getAttribute('data-is-main') === 'true';
+                    
+                    card.remove();
+                    
+                    if (wasMain) {
+                        const remainingCards = document.querySelectorAll('.gallery-card');
+                        if (remainingCards.length > 0) {
+                            const firstLabel = remainingCards[0].querySelector('label');
+                            setMainImage(firstLabel);
+                        }
+                    }
+                    
+                    const remainingCards = document.querySelectorAll('.gallery-card');
+                    if (remainingCards.length === 0) {
+                        document.getElementById('gallery-wrapper').classList.add('hidden');
+                    }
+                    
+                    updateGalleryLayout();
+                }
+
+                function addDragHandlers(card) {
+                    card.addEventListener('dragstart', function(e) {
+                        draggedCard = this;
+                        this.classList.add('opacity-40');
+                        e.dataTransfer.effectAllowed = 'move';
+                    });
+
+                    card.addEventListener('dragend', function() {
+                        draggedCard = null;
+                        this.classList.remove('opacity-40');
+                        updateGalleryLayout();
+                    });
+
+                    card.addEventListener('dragover', function(e) {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                    });
+
+                    card.addEventListener('dragenter', function(e) {
+                        e.preventDefault();
+                        if (this !== draggedCard) {
+                            this.classList.add('border-blue-500', 'scale-105');
+                        }
+                    });
+
+                    card.addEventListener('dragleave', function() {
+                        this.classList.remove('border-blue-500', 'scale-105');
+                    });
+
+                    card.addEventListener('drop', function(e) {
+                        e.preventDefault();
+                        this.classList.remove('border-blue-500', 'scale-105');
+                        if (this !== draggedCard) {
+                            const container = document.getElementById('gallery-container');
+                            const allCards = Array.from(container.querySelectorAll('.gallery-card'));
+                            const draggedIdx = allCards.indexOf(draggedCard);
+                            const targetIdx = allCards.indexOf(this);
+
+                            if (draggedIdx < targetIdx) {
+                                container.insertBefore(draggedCard, this.nextSibling);
+                            } else {
+                                container.insertBefore(draggedCard, this);
+                            }
+                            updateGalleryLayout();
+                        }
+                    });
+                }
+
+                function updateGalleryLayout() {
+                    const cards = document.querySelectorAll('.gallery-card');
+                    const layout = [];
+                    
+                    cards.forEach(card => {
+                        const type = card.getAttribute('data-type');
+                        const isMain = card.getAttribute('data-is-main') === 'true';
+                        
+                        if (type === 'existing') {
+                            layout.push({
+                                type: 'existing',
+                                id: parseInt(card.getAttribute('data-id')),
+                                is_main: isMain
+                            });
+                        } else {
+                            layout.push({
+                                type: 'new',
+                                index: parseInt(card.getAttribute('data-index')),
+                                is_main: isMain
+                            });
+                        }
+                    });
+                    
+                    document.getElementById('gallery_layout').value = JSON.stringify(layout);
+                }
+
+                // Bind handlers to existing cards on page load and handle form submit interception
+                document.addEventListener('DOMContentLoaded', function() {
+                    const container = document.getElementById('gallery-container');
+                    if (container) {
+                        container.querySelectorAll('.gallery-card').forEach(card => {
+                            addDragHandlers(card);
+                        });
+                        updateGalleryLayout();
+                    }
+
+                    const form = document.querySelector('form');
+                    if (form) {
+                        form.addEventListener('submit', function(e) {
+                            const newCards = Array.from(document.querySelectorAll('.gallery-card[data-type="new"]'));
+                            const dt = new DataTransfer();
+                            
+                            newCards.forEach(card => {
+                                const fileIndex = parseInt(card.getAttribute('data-index'));
+                                const file = selectedFiles[fileIndex];
+                                if (file) {
+                                    dt.items.add(file);
+                                }
+                            });
+                            
+                            const fileInput = document.getElementById('gallery_images');
+                            if (fileInput) {
+                                fileInput.files = dt.files;
+                            }
+                            
+                            updateGalleryLayout();
+                        });
+                    }
+                });
+            </script>
+        </div>
         </div>
 
         <div class="mt-8 pt-6 border-t flex justify-end gap-4">

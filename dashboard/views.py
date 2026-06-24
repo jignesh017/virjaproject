@@ -8,7 +8,7 @@ from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from core.models import CompanyInfo, HomePageContent, HomeFeature, SMTPSettings, NewsletterSubscriber
 from banners.models import Banner
-from products.models import Product
+from products.models import Product, ProductImage
 from categories.models import Category
 from brands.models import Brand
 from enquiries.models import Enquiry
@@ -188,7 +188,43 @@ def product_create(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            product = form.save()
+            
+            layout_str = request.POST.get('gallery_layout')
+            if layout_str:
+                import json
+                try:
+                    layout = json.loads(layout_str)
+                except ValueError:
+                    layout = []
+                
+                new_files = request.FILES.getlist('gallery_images')
+                new_file_idx = 0
+                
+                for index, item in enumerate(layout):
+                    is_main = item.get('is_main', False)
+                    if item['type'] == 'new' and new_file_idx < len(new_files):
+                        img_file = new_files[new_file_idx]
+                        new_file_idx += 1
+                        img = ProductImage.objects.create(
+                            product=product,
+                            image=img_file,
+                            order=index,
+                            is_main=is_main
+                        )
+                        if is_main:
+                            product.main_image = img.image
+                product.save(update_fields=['main_image'])
+            
+            # Fallback: if there are images but none is marked as main, set the first one as main
+            if product.images.exists() and not ProductImage.objects.filter(product=product, is_main=True).exists():
+                first_img = product.images.first()
+                if first_img:
+                    first_img.is_main = True
+                    first_img.save()
+                    product.main_image = first_img.image
+                    product.save(update_fields=['main_image'])
+
             messages.success(request, "Product created successfully.")
             return redirect('dashboard:product_list')
     else:
@@ -202,12 +238,69 @@ def product_edit(request, pk):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES, instance=product)
         if form.is_valid():
-            form.save()
+            product = form.save()
+
+            layout_str = request.POST.get('gallery_layout')
+            if layout_str:
+                import json
+                try:
+                    layout = json.loads(layout_str)
+                except ValueError:
+                    layout = []
+                
+                # 1. Handle deletion of existing images not present in the layout
+                remaining_ids = [item['id'] for item in layout if item['type'] == 'existing']
+                ProductImage.objects.filter(product=product).exclude(id__in=remaining_ids).delete()
+                
+                new_files = request.FILES.getlist('gallery_images')
+                new_file_idx = 0
+                
+                # Reset product main_image to None initially; we will set it from the layout
+                product.main_image = None
+                
+                for index, item in enumerate(layout):
+                    is_main = item.get('is_main', False)
+                    if item['type'] == 'existing':
+                        try:
+                            img = ProductImage.objects.get(id=item['id'], product=product)
+                            img.order = index
+                            img.is_main = is_main
+                            img.save()
+                            if is_main:
+                                product.main_image = img.image
+                        except ProductImage.DoesNotExist:
+                            pass
+                    elif item['type'] == 'new' and new_file_idx < len(new_files):
+                        img_file = new_files[new_file_idx]
+                        new_file_idx += 1
+                        img = ProductImage.objects.create(
+                            product=product,
+                            image=img_file,
+                            order=index,
+                            is_main=is_main
+                        )
+                        if is_main:
+                            product.main_image = img.image
+                
+                product.save(update_fields=['main_image'])
+
+            # Ensure if all images were deleted, product.main_image is cleared
+            if not product.images.exists():
+                product.main_image = None
+                product.save(update_fields=['main_image'])
+            elif not ProductImage.objects.filter(product=product, is_main=True).exists():
+                first_img = product.images.first()
+                if first_img:
+                    first_img.is_main = True
+                    first_img.save()
+                    product.main_image = first_img.image
+                    product.save(update_fields=['main_image'])
+
             messages.success(request, "Product updated successfully.")
             return redirect('dashboard:product_list')
     else:
         form = ProductForm(instance=product)
-    return render(request, 'dashboard/catalog/product_form.html', {'form': form, 'title': 'Edit Product'})
+    return render(request, 'dashboard/catalog/product_form.html', {'form': form, 'title': 'Edit Product', 'product': product})
 
 @login_required(login_url='dashboard:login')
 @user_passes_test(admin_required, login_url='dashboard:login')

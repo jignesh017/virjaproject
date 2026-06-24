@@ -10,7 +10,7 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
     description = models.TextField()
     specification = models.TextField(help_text="JSON or HTML specifications", blank=True)
-    main_image = models.ImageField(upload_to='products/')
+    main_image = models.ImageField(upload_to='products/', null=True, blank=True)
     pdf_brochure = models.FileField(upload_to='products/pdfs/', null=True, blank=True)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -28,6 +28,11 @@ class Product(models.Model):
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='products/gallery/')
+    order = models.PositiveIntegerField(default=0)
+    is_main = models.BooleanField(default=False)
     
+    class Meta:
+        ordering = ['order', 'id']
+
     def __str__(self):
         return f"Image for {self.product.name}"
