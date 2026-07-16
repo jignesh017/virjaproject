@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ company_info.name|default:"Virja Industries" }}{% endblock %}</title>
     <!-- Tailwind CSS (CDN for development, replace with local build in production) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script>
         tailwind.config = {
             theme: {
