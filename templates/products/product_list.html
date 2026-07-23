@@ -33,7 +33,7 @@ Products | Virja Industries
                 </div>
 
                 <!-- Categories -->
-                <div class="mb-6">
+                {% comment %} <div class="mb-6">
                     <h3 class="font-bold text-gray-800 mb-3 border-b pb-2 uppercase text-sm tracking-wide">Categories
                     </h3>
                     <ul class="space-y-2 text-sm">
@@ -63,10 +63,66 @@ Products | Virja Industries
                         </li>
                         {% endfor %}
                     </ul>
-                </div>
+                </div> {% endcomment %}
+<!-- Categories -->
+<div class="mb-6">
+    <h3 class="font-bold text-gray-800 mb-3 border-b pb-2 uppercase text-sm tracking-wide">
+        Categories
+    </h3>
+
+    <!-- Search -->
+    <input type="text"
+           id="categorySearch"
+           placeholder="Search Category..."
+           class="w-full border rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary">
+
+    <!-- Scroll -->
+    <div class="max-h-72 overflow-y-auto border rounded-lg p-2">
+
+        <ul id="categoryList" class="space-y-2 text-sm">
+
+            <li class="category-item">
+                <a href="{% url 'product_list' %}"
+                   class="{% if not selected_category %}text-secondary font-bold{% else %}text-gray-600 hover:text-primary{% endif %}">
+                    All Products
+                </a>
+            </li>
+
+            {% for cat in categories %}
+
+            <li class="category-item">
+
+                <a href="?category={{ cat.slug }}"
+                   class="{% if selected_category == cat %}text-secondary font-bold{% elif selected_category.parent == cat %}text-primary font-semibold{% else %}text-gray-600 hover:text-primary{% endif %}">
+                    {{ cat.name }}
+                </a>
+
+                {% if cat.children.exists %}
+                <ul class="ml-4 mt-1 space-y-1 border-l border-gray-200 pl-2">
+
+                    {% for child in cat.children.all %}
+                    <li class="category-item">
+                        <a href="?category={{ child.slug }}"
+                           class="{% if selected_category == child %}text-secondary font-bold{% else %}text-gray-500 hover:text-primary{% endif %}">
+                            {{ child.name }}
+                        </a>
+                    </li>
+                    {% endfor %}
+
+                </ul>
+                {% endif %}
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+</div>
 
                 <!-- Brands -->
-                <div class="mb-6">
+                {% comment %} <div class="mb-6">
                     <h3 class="font-bold text-gray-800 mb-3 border-b pb-2 uppercase text-sm tracking-wide">Brands</h3>
                     <ul class="space-y-2 text-sm">
                         {% for brand in brands %}
@@ -83,7 +139,50 @@ Products | Virja Industries
                         </li>
                         {% endfor %}
                     </ul>
-                </div>
+                </div> {% endcomment %}
+<!-- Brands -->
+<div class="mb-6">
+
+    <h3 class="font-bold text-gray-800 mb-3 border-b pb-2 uppercase text-sm tracking-wide">
+        Brands
+    </h3>
+
+    <input type="text"
+           id="brandSearch"
+           placeholder="Search Brand..."
+           class="w-full border rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary">
+
+    <div class="max-h-72 overflow-y-auto border rounded-lg p-2">
+
+        <ul id="brandList" class="space-y-2 text-sm">
+
+            {% for brand in brands %}
+
+            <li class="brand-item">
+
+                <a href="?{% if selected_category %}category={{ selected_category.slug }}&{% endif %}brand={{ brand.slug }}"
+                   class="text-gray-600 hover:text-primary flex items-center">
+
+                    <span class="w-4 h-4 border border-gray-300 rounded mr-2 flex items-center justify-center">
+                        {% if request.GET.brand == brand.slug %}
+                        <div class="w-2 h-2 bg-secondary rounded-full"></div>
+                        {% endif %}
+                    </span>
+
+                    {{ brand.name }}
+
+                </a>
+
+            </li>
+
+            {% endfor %}
+
+        </ul>
+
+    </div>
+
+</div>
+
             </div>
         </aside>
 
@@ -125,7 +224,7 @@ Products | Virja Industries
                         <div class="text-xs text-gray-500 mb-1 uppercase font-semibold tracking-wide">
                             {{ product.brand.name }}
                         </div>
-                        <h2 class="text-lg font-bold text-gray-800 mb-2 leading-tight hover:text-primary transition">
+                        <h2 class="text-lg font-bold text-gray-800 mb-2 leading-tight hover:text-primary transition uppercase">
                             <a href="{% url 'product_detail' product.slug %}">{{ product.name }}</a>
                         </h2>
 
@@ -133,7 +232,7 @@ Products | Virja Industries
                             <a href="{% url 'product_detail' product.slug %}"
                                 class="flex-1 text-center bg-gray-100 text-gray-800 py-2 rounded hover:bg-primary hover:text-white transition font-semibold text-sm">Detailed
                                 Specs</a>
-                            <button type="button" 
+                            <button type="button"
                                 @click.stop="
                                     updating = true;
                                     fetch('{% url 'cart:cart_add' product.id %}', { method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'} })
@@ -191,4 +290,36 @@ Products | Virja Industries
         </main>
     </div>
 </div>
+
+<script>
+
+document.getElementById("categorySearch").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+
+    document.querySelectorAll("#categoryList .category-item").forEach(function (item) {
+
+        item.style.display = item.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+
+    });
+
+});
+
+document.getElementById("brandSearch").addEventListener("keyup", function () {
+
+    let value = this.value.toLowerCase();
+
+    document.querySelectorAll("#brandList .brand-item").forEach(function (item) {
+
+        item.style.display = item.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+
+    });
+
+});
+
+</script>
 {% endblock %}

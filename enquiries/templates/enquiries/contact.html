@@ -117,6 +117,13 @@
                     <h2 class="text-2xl font-bold text-primary mb-6">Get in Touch</h2>
                     {% if company_info %}
                     <ul class="space-y-4 text-gray-700">
+                        <!-- Company Name -->
+                        <li class="flex items-center">
+                            <i class="fas fa-building text-secondary w-8"></i>
+                            <span class="text-xl font-bold text-gray-900">
+                                VIRJA AUTOMATION PVT. LTD.
+                            </span>
+                        </li>
                         <li class="flex items-start">
                             <i class="fas fa-map-marker-alt text-secondary w-8 mt-1"></i>
                             <a href="https://www.google.com/maps/search/?api=1&query={{ company_info.address|striptags|urlencode }}" target="_blank" class="hover:text-secondary transition">
@@ -175,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const selectedState = this.value;
             // The JSON from cities.js uses the 'stateCities' variable
             const cities = typeof stateCities !== 'undefined' ? (stateCities[selectedState] || []) : [];
-            
+
             citySelect.innerHTML = '<option value="" disabled selected>Select your city</option>';
             cities.forEach(function(city) {
                 const option = document.createElement("option");
@@ -184,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 citySelect.appendChild(option);
             });
         });
-        
+
         // initialize if state already selected (like back button)
         if (stateSelect.value) {
             stateSelect.dispatchEvent(new Event('change'));

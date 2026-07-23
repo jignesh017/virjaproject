@@ -32,11 +32,10 @@
                     </template>
                     <div class="absolute top-4 left-4">
                         {% if product.brand.logo %}
-                        <img src="{{ product.brand.logo.url }}" class="h-8 bg-white p-1 rounded border border-gray-100"
+                        <img src="{{ product.brand.logo.url }}" class="h-12 bg-white p-1 rounded border border-gray-100"
                             title="{{ product.brand.name }}">
                         {% else %}
-                        <span class="bg-gray-100 text-xs font-bold px-2 py-1 rounded text-gray-600">{{
-                            product.brand.name }}</span>
+                        <span class="bg-gray-100 text-xs font-bold px-2 py-1 rounded text-gray-600">{{ product.brand.name }}</span>
                         {% endif %}
                     </div>
                 </div>
@@ -63,19 +62,39 @@
 
             <!-- Info -->
             <div>
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ product.name }}</h1>
-                <div class="text-gray-500 mb-6">Article No:
-                    <span class="font-mono text-gray-700 font-bold bg-gray-100 px-2 py-0.5 rounded text-sm">
-                        {{ product.slug|upper }}
-                    </span>
-                </div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2 uppercase">{{ product.name }}</h1>
+<div class="mb-6 space-y-2">
+    <!-- Model Number -->
+    <div class="text-gray-500">
+        <span class="font-semibold">Model No:</span>
+        <span class="font-mono text-gray-700 font-bold bg-gray-100 px-2 py-0.5 rounded text-sm">
+            {{ product.slug|upper }}
+        </span>
+    </div>
 
-                <div class="prose prose-sm text-gray-600 mb-8 max-w-none">
-                    {{ product.description|safe }}
-                </div>
+    <!-- Category -->
+    <div class="text-gray-500">
+        <span class="font-semibold">Category:</span>
+        <span class="inline-block bg-blue-50 text-blue-700 font-semibold px-2 py-0.5 rounded text-sm">
+            {{ product.category.name }}
+        </span>
+    </div>
+</div>
+
+<div class="prose prose-sm md:prose max-w-none text-gray-700 mb-8
+            overflow-x-auto break-words
+            [&_table]:w-full
+            [&_table]:block
+            [&_table]:overflow-x-auto
+            [&_img]:max-w-full
+            [&_img]:h-auto
+            [&_iframe]:max-w-full
+            [&_pre]:overflow-x-auto">
+    {{ product.description|safe }}
+</div>
 
                 <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-8">
-                    <div class="flex-1" x-data="{ 
+                    <div class="flex-1" x-data="{
                         cartQty: {{ cart_qty|default:0 }},
                         updating: false,
                         add() {
@@ -131,31 +150,60 @@
                             </button>
                         </div>
                     </div>
-                    {% if product.pdf_brochure %}
-                    <a href="{{ product.pdf_brochure.url }}" target="_blank"
-                        class="flex-1 border-2 border-primary text-primary text-center px-6 py-3 rounded font-bold hover:bg-primary hover:text-white transition flex justify-center items-center">
-                        <i class="fas fa-file-pdf mr-2"></i> Download Datasheet
-                    </a>
-                    {% endif %}
+                    <!--{% if product.pdf_brochure %}-->
+                    <!--<a href="{{ product.pdf_brochure.url }}" target="_blank"-->
+                    <!--    class="flex-1 border-2 border-primary text-primary text-center px-6 py-3 rounded font-bold hover:bg-primary hover:text-white transition flex justify-center items-center">-->
+                    <!--    <i class="fas fa-file-pdf mr-2"></i> Download catalogue-->
+                    <!--</a>-->
+                    <!--{% endif %}-->
+<a href="{% if product.pdf_brochure %}{{ product.pdf_brochure.url }}{% else %}/media/products/pdfs/VAPL-CATALOG.pdf{% endif %}"
+   target="_blank"
+   class="flex-1 border-2 border-primary text-primary text-center px-6 py-3 rounded font-bold hover:bg-primary hover:text-white transition flex justify-center items-center">
+    <i class="fas fa-file-pdf mr-2"></i> Download Catalogue
+</a>
                 </div>
 
+                <a href="https://wa.me/9156749657?text=Hello,%20I%20am%20interested%20in%20the%20following%20product:%0A%0AProduct:%20{{ product.name }}%0AModel:%20{{ product.slug|upper }}%0ACategory:%20{{ product.category.name }}%0A%0APlease%20share%20price,%20availability%20and%20catalogue."
+   target="_blank"
+   class="w-full bg-green-600 text-white text-center px-6 py-3 rounded font-bold hover:bg-green-700 transition shadow-lg flex justify-center items-center">
+    <i class="fab fa-whatsapp mr-2 text-lg"></i>
+    Inquiry on WhatsApp
+</a>
+
                 <!-- Tabs -->
+                <!--<div x-data="{ tab: 'specs' }">-->
+                <!--    <div class="border-b border-gray-200 flex space-x-8 mb-4">-->
+                <!--        <button @click="tab = 'specs'"-->
+                <!--            :class="{ 'border-secondary text-secondary': tab === 'specs', 'border-transparent text-gray-500 hover:text-gray-700': tab !== 'specs' }"-->
+                <!--            class="pb-2 text-sm font-medium border-b-2 transition">Specifications</button>-->
+                <!--    </div>-->
+
+                <!--    <div x-show="tab === 'specs'"-->
+                <!--        class="bg-gray-50 p-6 rounded-lg border border-gray-100 text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none">-->
+                <!--        {% if product.specification %}-->
+                <!--        {{ product.specification|safe }}-->
+                <!--        {% else %}-->
+                <!--        <p class="italic text-gray-500">No specific technical data available for this product.</p>-->
+                <!--        {% endif %}-->
+                <!--    </div>-->
+                <!--</div>-->
+                {% if product.specification %}
+                <!-- Technical Specifications -->
                 <div x-data="{ tab: 'specs' }">
                     <div class="border-b border-gray-200 flex space-x-8 mb-4">
                         <button @click="tab = 'specs'"
                             :class="{ 'border-secondary text-secondary': tab === 'specs', 'border-transparent text-gray-500 hover:text-gray-700': tab !== 'specs' }"
-                            class="pb-2 text-sm font-medium border-b-2 transition">Specifications</button>
+                            class="pb-2 text-sm font-medium border-b-2 transition">
+                            Technical Specifications
+                        </button>
                     </div>
 
                     <div x-show="tab === 'specs'"
                         class="bg-gray-50 p-6 rounded-lg border border-gray-100 text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none">
-                        {% if product.specification %}
                         {{ product.specification|safe }}
-                        {% else %}
-                        <p class="italic text-gray-500">No specific technical data available for this product.</p>
-                        {% endif %}
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
 

@@ -9,34 +9,121 @@ Brands | Virja Industries
 <div class="bg-gray-50 py-8">
     <div class="container mx-auto px-4">
 
-        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Our Brands</h1>
+        <!-- Page Heading -->
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+            Our Brands
+        </h1>
+
+        <!-- Search Bar -->
+        <div class="max-w-md mx-auto mb-10">
+            <div class="relative">
+                <input
+                    type="text"
+                    id="brandSearch"
+                    placeholder="Search brands..."
+                    class="w-full rounded-xl border border-gray-300 bg-white py-3 pl-11 pr-4 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
+
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </div>
 
         {% if brands %}
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+        <!-- Brand Grid -->
+        <div id="brandGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
             {% for brand in brands %}
+
             <a href="{% url 'product_list' %}?brand={{ brand.slug }}"
-                class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-lg transition p-6 flex flex-col items-center justify-center text-center group relative block">
-                <div class="h-32 w-full flex items-center justify-center mb-4">
+                class="brand-card group bg-white rounded-xl border border-gray-200 shadow-sm
+                       hover:shadow-xl hover:border-primary/40 hover:-translate-y-1
+                       transition-all duration-300 ease-in-out
+                       p-6 flex flex-col items-center justify-center text-center"
+                data-name="{{ brand.name|lower }}">
+
+                <!-- Brand Logo -->
+                <div class="h-32 w-full flex items-center justify-center mb-5 overflow-hidden">
                     {% if brand.logo %}
-                    <img src="{{ brand.logo.url }}" alt="{{ brand.name }}"
-                        class="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition duration-300">
+                    <img src="{{ brand.logo.url }}"
+                        alt="{{ brand.name }}"
+                        class="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105">
                     {% else %}
-                    <div class="text-gray-400 font-bold text-xl">{{ brand.name|slice:":1" }}</div>
+                    <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-3xl font-bold text-gray-500">
+                        {{ brand.name|slice:":1" }}
+                    </div>
                     {% endif %}
                 </div>
-                <h2 class="text-lg font-bold text-gray-800 group-hover:text-primary transition">
+
+                <!-- Brand Name -->
+                <h2 class="text-lg font-semibold text-gray-800 transition-colors duration-300 group-hover:text-primary">
                     {{ brand.name }}
                 </h2>
+
             </a>
+
             {% endfor %}
+
         </div>
+
+        <!-- No Search Results -->
+        <div id="noBrandsFound" class="hidden text-center py-16">
+            <i class="fas fa-search text-5xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700">
+                No brands found
+            </h3>
+            <p class="text-gray-500 mt-2">
+                Try another keyword.
+            </p>
+        </div>
+
         {% else %}
-        <div class="text-center py-20 bg-white rounded-lg shadow-sm border border-gray-200">
-            <i class="fas fa-tags fa-3x text-gray-300 mb-4"></i>
-            <p class="text-gray-500 text-lg">No brands available at the moment.</p>
+
+        <!-- No Brands Available -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 py-20 text-center">
+            <i class="fas fa-tags text-5xl text-gray-300 mb-5"></i>
+            <p class="text-lg text-gray-500">
+                No brands available at the moment.
+            </p>
         </div>
+
         {% endif %}
 
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("brandSearch");
+
+    if (!searchInput) return;
+
+    const cards = document.querySelectorAll(".brand-card");
+    const noResult = document.getElementById("noBrandsFound");
+
+    searchInput.addEventListener("input", function () {
+
+        const keyword = this.value.toLowerCase().trim();
+        let visible = 0;
+
+        cards.forEach(function(card){
+
+            const brandName = card.dataset.name;
+
+            if (brandName.includes(keyword)) {
+                card.style.display = "flex";
+                visible++;
+            } else {
+                card.style.display = "none";
+            }
+
+        });
+
+        noResult.classList.toggle("hidden", visible > 0);
+
+    });
+
+});
+</script>
+
 {% endblock %}
